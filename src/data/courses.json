@@ -1,0 +1,58 @@
+{
+    "courses": [
+      {
+        "id": 1,
+        "title": "Algebra I",
+        "description": "Master the basics of algebra with interactive lessons.",
+        "tags": ["beginner", "math"],
+        "image": "/src/assets/algebra1.jpeg",
+        "chapters": [
+          {
+            "id": 1,
+            "course_id": 1,
+            "title": "Foundations",
+            "description": "Basic algebraic concepts",
+            "image": "/images/algebra-foundations.jpg",
+            "lessons": [
+              {
+                "id": 1,
+                "course_id": 1,
+                "chapter_id": 1,
+                "title": "Variables and Expressions",
+                "description": "Understanding variables in algebra",
+                "contents": [
+                  {
+                    "type": "markdown",
+                    "data": {
+                      "text": "## What are Variables?\n\nIn algebra, variables (like $x$ or $y$) represent unknown values. They follow the same arithmetic rules as numbers.\n\nFor example: $2x + 3x = 5x$",
+                      "format": "latex"
+                    }
+                  },
+                  {
+                    "type": "visualization",
+                    "data": {
+                      "engine": "plotly",
+                      "config": {
+                        "data": [{ "x": [1,2,3], "y": [1,4,9], "type": "scatter" }],
+                        "layout": { "title": "Quadratic Relationship" }
+                      }
+                    }
+                  },
+                  {
+                    "type": "question",
+                    "data": {
+                      "format": "multiple_choice",
+                      "question": "What does $3x + 2x$ simplify to?",
+                      "options": ["5x", "6x", "5x²"],
+                      "correct_answer": 0,
+                      "explanation": "When terms have the same variable, we add their coefficients."
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
