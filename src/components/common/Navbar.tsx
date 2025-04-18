@@ -9,7 +9,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white">
+    <header className="bg-white text-black sticky top-0 shadow-x1">
       <nav className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -22,9 +22,9 @@ const Navbar = () => {
             className="sm:hidden flex flex-col items-center justify-between w-6 h-6 space-y-1"
             onClick={toggleMenu}
           >
-            <span className="block w-full h-1 bg-white"></span>
-            <span className="block w-full h-1 bg-white"></span>
-            <span className="block w-full h-1 bg-white"></span>
+            <span className="block w-full h-1 bg-black"></span>
+            <span className="block w-full h-1 bg-black"></span>
+            <span className="block w-full h-1 bg-black"></span>
           </button>
 
           {/* Navbar Links for larger screens */}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import coursesData from '../data/courses.json';
 import type { Course } from '../types/course';
 
@@ -42,6 +43,12 @@ const LandingPage = () => {
   const clearAllFilters = () => {
     setActiveFilters([]);
     setSearchTerm('');
+  };
+
+  const navigate = useNavigate();
+
+  const handleCourseClick = (courseId: number) => {
+    navigate(`/courses/${courseId}`);
   };
 
   return (
@@ -113,7 +120,7 @@ const LandingPage = () => {
           {filteredCourses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredCourses.map(course => (
-                <div key={course.id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200">
+                <div key={course.id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200" onClick={() => handleCourseClick(course.id)}>
                   {course.image && (
                     <img 
                       src={course.image} 
@@ -148,7 +155,6 @@ const LandingPage = () => {
                       </span>
                     ))}
                   </div>
-                  <a href={`/courses/${course.id}`} className="text-blue-500 hover:underline">Learn More</a>
                 </div>
               ))}
             </div>
