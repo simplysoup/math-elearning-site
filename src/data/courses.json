@@ -24,18 +24,8 @@
                   {
                     "type": "markdown",
                     "data": {
-                      "text": "## What are Variables?\n\nIn algebra, variables (like $x$ or $y$) represent unknown values. They follow the same arithmetic rules as numbers.\n\nFor example: $2x + 3x = 5x$",
+                      "text": "What are Variables?\n\nIn algebra, variables (like $x$ or $y$) represent unknown values. They follow the same arithmetic rules as numbers.\n\nFor example: $2x + 3x = 5x$",
                       "format": "latex"
-                    }
-                  },
-                  {
-                    "type": "visualization",
-                    "data": {
-                      "engine": "plotly",
-                      "config": {
-                        "data": [{ "x": [1,2,3], "y": [1,4,9], "type": "scatter" }],
-                        "layout": { "title": "Quadratic Relationship" }
-                      }
                     }
                   },
                   {
