@@ -34,12 +34,14 @@
                     "format": "multiple_choice",
                     "question": "What does $3x + 2x$ simplify to when $x=4$?",
                     "options": [
-                      "$5x$ (value: 20)",
-                      "$6x$ (value: 24)",
-                      "$5x^2$ (value: 80)"
+                      "20",
+                      "24",
+                      "80",
+                      "16"
                     ],
                     "correct_answer": 0,
-                    "explanation": "Combine like terms: $3x + 2x = 5x$. When $x=4$, $5x = 20$."
+                    "explanation": "Combine like terms: $3x + 2x = 5x$. When $x=4$, $5x = 20$.",
+                    "visualization": false
                   }
                 },
                 {
@@ -55,7 +57,8 @@
                     "format": "short_answer",
                     "question": "Expand: $4(3x - 2)$",
                     "correct_answer": "12x - 8",
-                    "explanation": "Multiply both terms by 4: $4 \\times 3x = 12x$ and $4 \\times (-2) = -8$."
+                    "explanation": "Multiply both terms by 4: $4 \\times 3x = 12x$ and $4 \\times (-2) = -8$.",
+                    "visualization": false
                   }
                 }
               ]

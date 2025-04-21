@@ -5,14 +5,32 @@ interface QuestionComponentProps {
     content: QuestionContent;
     userAnswer?: string | number | null;
     showError?: boolean;
+    showExplanation?: boolean;
+    isChecking?: boolean;
     onAnswerChange?: (value: string | number) => void;
+    onCheckAnswer?: () => void;
+    onTryAgain?: () => void;
+    onContinue?: () => void;
+    onShowExplanation?: () => void;
+    isFinalQuestion?: boolean;
+    isCurrent: boolean;
+    onCompleteLesson?: () => void;
 }
 
 export const QuestionComponent = ({ 
     content, 
     userAnswer, 
     showError, 
-    onAnswerChange 
+    showExplanation,
+    isChecking = false,
+    onAnswerChange,
+    onCheckAnswer,
+    onTryAgain,
+    onContinue,
+    onShowExplanation,
+    isFinalQuestion = false,
+    isCurrent = true,
+    onCompleteLesson
 }: QuestionComponentProps) => {
     const renderOptions = () => {
         if (!content.data.options || content.data.options.length === 0) {
@@ -24,46 +42,119 @@ export const QuestionComponent = ({
         }
 
         return (
-            <ul className="space-y-2">
-                {content.data.options.map((option, optionIndex) => (
-                    <li key={optionIndex}>
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                            <input
-                                type="radio"
-                                name={`question`}
-                                checked={userAnswer === optionIndex}
-                                onChange={() => onAnswerChange?.(optionIndex)}
-                                className="h-4 w-4 text-blue-600"
-                            />
+            <div className={`grid grid-cols-2 gap-3 mt-4 ${isChecking ? 'pointer-events-none' : ''}`}>
+                {content.data.options.map((option, optionIndex) => {
+                    const isSelected = userAnswer === optionIndex;
+                    const isCorrectAnswer = optionIndex === content.data.correct_answer;
+                    const isIncorrectAttempt = showError && isSelected;
+                    const showAsCorrect = isChecking && isCorrectAnswer;
+
+                    return (
+                        <button
+                            key={optionIndex}
+                            className={`p-4 border rounded-lg text-center transition-all
+                                ${showAsCorrect ? 'bg-green-100 border-green-300' : ''}
+                                ${isIncorrectAttempt ? 'bg-gray-100 border-gray-300 text-gray-400' : ''}
+                                ${isSelected && !isChecking ? 'bg-blue-100 border-blue-300' : ''}
+                                ${!isSelected && !isChecking ? 'hover:bg-gray-50' : ''}`}
+                            onClick={() => onAnswerChange?.(optionIndex)}
+                        >
                             <TextWithLatex text={option} />
-                        </label>
-                    </li>
-                ))}
-            </ul>
+                        </button>
+                    );
+                })}
+            </div>
         );
     };
 
+    const isCorrect = isChecking && !showError && userAnswer === content.data.correct_answer;
+
     return (
         <div className="space-y-4">
-            <h3 className="font-bold">
-                <TextWithLatex text={content.data.question} />
-            </h3>
-            
+            {/* Question bubble */}
+            <div className="bg-gray-100 p-4 rounded-lg">
+                <h3 className="font-bold">
+                    <TextWithLatex text={content.data.question} />
+                </h3>
+            </div>
+
+            {/* Answer options */}
             {content.data.format === 'multiple_choice' && renderOptions()}
             
             {content.data.format === 'short_answer' && (
                 <textarea
-                    className="w-full p-2 border rounded mt-2"
+                    className={`w-full p-2 border rounded mt-2 ${isChecking ? 'bg-gray-50' : ''}`}
                     value={userAnswer?.toString() || ''}
                     onChange={(e) => onAnswerChange?.(e.target.value)}
                     placeholder="Type your answer here..."
+                    disabled={isChecking}
                 />
             )}
-            
-            {showError && (
-                <div className="text-red-600">
-                    <TextWithLatex text={content.data.explanation || 'Please check your answer'} />
+
+            {/* Check Answer button */}
+            {!isChecking && isCurrent && (
+                <button
+                    onClick={onCheckAnswer}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    disabled={userAnswer === null || userAnswer === undefined}
+                >
+                    Check Answer
+                </button>
+            )}
+
+            {/* Correct answer feedback */}
+            {isCorrect && (
+                <div className="bg-green-100 p-4 rounded-lg border border-green-200">
+                    <div className="flex justify-between items-center">
+                        <span className="font-bold text-green-800">Correct!</span>
+                        <button 
+                            onClick={onShowExplanation}
+                            className="text-blue-600 hover:text-blue-800"
+                        >
+                            Why?
+                        </button>
+                    </div>
                 </div>
+            )}
+
+            {/* Incorrect answer feedback */}
+            {isChecking && showError && (
+                <div className="bg-yellow-100 p-4 rounded-lg border border-yellow-200">
+                    <TextWithLatex text={"That's incorrect. Try again."} />
+                    <div className="flex space-x-3 mt-3">
+                        <button
+                            onClick={() => onAnswerChange?.(content.data.correct_answer)}
+                            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                        >
+                            Show Answer
+                        </button>
+                        <button
+                            onClick={onTryAgain}
+                            className="px-4 py-2 bg-blue-200 text-blue-800 rounded hover:bg-blue-300"
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Explanation - shown after clicking Why? */}
+            {(showExplanation || !isCurrent ) && (
+                <div className="bg-gray-200 p-4 rounded-lg">
+                    <p><b>Explanation:</b></p>
+                    <TextWithLatex text={content.data.explanation || "No explanation available."} />
+                </div>
+            )}
+
+            {/* Continue button - appears below everything for correct answers */}
+            {isCorrect && (
+                <button
+                    onClick={isFinalQuestion ? onCompleteLesson : onContinue}
+                    className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    disabled={!onContinue && !onCompleteLesson}  // Disable if no callbacks
+                >
+                    {isFinalQuestion ? 'Complete Lesson' : 'Continue'}
+                </button>
             )}
         </div>
     );

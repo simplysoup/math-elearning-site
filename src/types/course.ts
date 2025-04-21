@@ -18,6 +18,12 @@ export interface VisualizationContent extends ContentBase {
   };
 }
 
+export interface VisualizationComponentProps {
+  content: VisualizationContent;
+  isCurrent?: boolean;
+  onContinue?: () => void;
+}
+
 export interface VideoContent extends ContentBase {
   type: 'video';
   data: {
@@ -25,6 +31,12 @@ export interface VideoContent extends ContentBase {
       caption?: string;
       duration?: number;
   };
+}
+
+export interface VideoComponentProps {
+    content: VideoContent;
+    isCurrent?: boolean;
+    onContinue?: () => void;
 }
 
 export interface QuestionContent extends ContentBase {
@@ -35,9 +47,10 @@ export interface QuestionContent extends ContentBase {
       options?: string[];
       correct_answer: number | string;
       explanation?: string;
+      visualization?: boolean; // Add this line
   };
+  isCurrent: boolean;
 }
-
 export type LessonContent = 
   | MarkdownContent 
   | VisualizationContent 
@@ -78,8 +91,17 @@ export interface LessonComponentProps {
   isCurrent: boolean;
   userAnswer?: string | number | null;
   showError?: boolean;
+  showExplanation?: boolean;
+  isChecking?: boolean;
   onAnswerChange?: (index: number, value: string | number) => void;
+  onCheckAnswer?: () => void;
+  onTryAgain?: () => void;
+  onContinue?: () => void;
+  onShowExplanation?: () => void;
+  onCompleteLesson?: () => void;
+  isFinalQuestion?: boolean;
 }
+
 export interface LessonNavigationProps {
   currentIndex: number;
   totalContents: number;
