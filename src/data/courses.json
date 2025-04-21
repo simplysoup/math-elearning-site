@@ -1,48 +1,68 @@
 {
-    "courses": [
-      {
-        "id": 1,
-        "title": "Algebra I",
-        "description": "Master the basics of algebra with interactive lessons.",
-        "tags": ["beginner", "math"],
-        "image": "/src/assets/algebra1.jpeg",
-        "chapters": [
-          {
-            "id": 1,
-            "course_id": 1,
-            "title": "Foundations",
-            "description": "Basic algebraic concepts",
-            "image": "/images/algebra-foundations.jpg",
-            "lessons": [
-              {
-                "id": 1,
-                "course_id": 1,
-                "chapter_id": 1,
-                "title": "Variables and Expressions",
-                "description": "Understanding variables in algebra",
-                "contents": [
-                  {
-                    "type": "markdown",
-                    "data": {
-                      "text": "What are Variables?\n\nIn algebra, variables (like $x$ or $y$) represent unknown values. They follow the same arithmetic rules as numbers.\n\nFor example: $2x + 3x = 5x$",
-                      "format": "latex"
-                    }
-                  },
-                  {
-                    "type": "question",
-                    "data": {
-                      "format": "multiple_choice",
-                      "question": "What does $3x + 2x$ simplify to?",
-                      "options": ["5x", "6x", "5x²"],
-                      "correct_answer": 0,
-                      "explanation": "When terms have the same variable, we add their coefficients."
-                    }
+  "courses": [
+    {
+      "id": 1,
+      "title": "Foundational Algebra",
+      "description": "Master core algebraic concepts",
+      "tags": ["algebra", "math"],
+      "image": "src/assets/algebra.jpeg",
+      "chapters": [
+        {
+          "id": 1,
+          "course_id": 1,
+          "title": "Variables & Expressions",
+          "description": "Introduction to algebraic variables",
+          "image": "/images/algebra-variables.jpg",
+          "lessons": [
+            {
+              "id": 1,
+              "course_id": 1,
+              "chapter_id": 1,
+              "title": "Algebraic Variables",
+              "description": "Understanding variables in algebra",
+              "contents": [
+                {
+                  "type": "markdown",
+                  "data": {
+                    "text": "In algebra, variables (like $x$ or $y$) represent unknown values. They follow the same arithmetic rules as numbers.\n\nExample:\nIf $x = 3$ and $y = 5$:\n\n1. Addition: $x + y = 3 + 5 = 8$\n2. Multiplication: $x \\times y = 3 \\times 5 = 15$\n3. Combined: $2x + 3y = 2(3) + 3(5) = 21$",
+                    "format": "latex"
                   }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+                },
+                {
+                  "type": "question",
+                  "data": {
+                    "format": "multiple_choice",
+                    "question": "What does $3x + 2x$ simplify to when $x=4$?",
+                    "options": [
+                      "$5x$ (value: 20)",
+                      "$6x$ (value: 24)",
+                      "$5x^2$ (value: 80)"
+                    ],
+                    "correct_answer": 0,
+                    "explanation": "Combine like terms: $3x + 2x = 5x$. When $x=4$, $5x = 20$."
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "data": {
+                    "text": "The distributive property connects multiplication and addition:\n\n$a(b + c) = ab + ac$\n\nExample:\n$3(2x + 4) = 6x + 12$\n\nThis works for subtraction too:\n$2(5y - 3) = 10y - 6$",
+                    "format": "latex"
+                  }
+                },
+                {
+                  "type": "question",
+                  "data": {
+                    "format": "short_answer",
+                    "question": "Expand: $4(3x - 2)$",
+                    "correct_answer": "12x - 8",
+                    "explanation": "Multiply both terms by 4: $4 \\times 3x = 12x$ and $4 \\times (-2) = -8$."
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

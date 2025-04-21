@@ -62,7 +62,7 @@ export const QuestionComponent = ({
             
             {showError && (
                 <div className="text-red-600">
-                    {content.data.explanation || 'Please check your answer'}
+                    <TextWithLatex text={content.data.explanation || 'Please check your answer'} />
                 </div>
             )}
         </div>

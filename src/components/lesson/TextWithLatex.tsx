@@ -20,7 +20,13 @@ export const TextWithLatex: React.FC<TextWithLatexProps> = ({ text }) => {
                         />
                     );
                 }
-                return <span key={index}>{part.content}</span>;
+                // Split plain text by newlines and render each line with a <br />
+                return part.content.split('\n').map((line, lineIndex) => (
+                    <React.Fragment key={`${index}-${lineIndex}`}>
+                        {lineIndex > 0 && <br />}
+                        {line}
+                    </React.Fragment>
+                ));
             })}
         </>
     );

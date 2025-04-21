@@ -75,14 +75,11 @@ export interface Course {
 export interface LessonComponentProps {
   content: LessonContent;
   index: number;
-  isExpanded: boolean;
   isCurrent: boolean;
   userAnswer?: string | number | null;
   showError?: boolean;
-  onToggle: (index: number) => void;
   onAnswerChange?: (index: number, value: string | number) => void;
 }
-
 export interface LessonNavigationProps {
   currentIndex: number;
   totalContents: number;

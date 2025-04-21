@@ -3,13 +3,15 @@ import { MarkdownComponent } from "./MarkdownComponent";
 import { QuestionComponent } from "./QuestionComponent";
 
 export const LessonContentRenderer = ({ 
-    content, 
-    userAnswer, 
-    onAnswerChange 
+    content,
+    userAnswer,
+    showError,
+    onAnswerChange
 }: { 
     content: LessonContent;
     userAnswer?: string | number | null;
-    onAnswerChange?: (value: string | number) => void;
+    showError?: boolean;
+    onAnswerChange?: (value: string | number) => void; // Only value parameter here
 }) => {
     switch (content.type) {
         case 'markdown':
@@ -18,6 +20,7 @@ export const LessonContentRenderer = ({
             return <QuestionComponent 
                 content={content} 
                 userAnswer={userAnswer}
+                showError={showError}
                 onAnswerChange={onAnswerChange}
             />;
         default:
