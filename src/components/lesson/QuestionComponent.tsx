@@ -47,7 +47,7 @@ export const QuestionComponent = ({
                     const isSelected = userAnswer === optionIndex;
                     const isCorrectAnswer = optionIndex === content.data.correct_answer;
                     const isIncorrectAttempt = showError && isSelected;
-                    const showAsCorrect = isChecking && isCorrectAnswer;
+                    const showAsCorrect = isChecking && isCorrectAnswer && isSelected;
 
                     return (
                         <button
@@ -56,7 +56,7 @@ export const QuestionComponent = ({
                                 ${showAsCorrect ? 'bg-green-100 border-green-300' : ''}
                                 ${isIncorrectAttempt ? 'bg-gray-100 border-gray-300 text-gray-400' : ''}
                                 ${isSelected && !isChecking ? 'bg-blue-100 border-blue-300' : ''}
-                                ${!isSelected && !isChecking ? 'hover:bg-gray-50' : ''}`}
+                                ${!isSelected && !isChecking ? 'hover:bg-gray-100' : ''}`}
                             onClick={() => onAnswerChange?.(optionIndex)}
                         >
                             <TextWithLatex text={option} />
