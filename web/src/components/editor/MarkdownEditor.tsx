@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { EditorProps } from '../../types/editor';
+import MarkdownRender from '../../utils/MarkdownRender';
 
 const MarkdownEditor = ({ content = '', onChange }: EditorProps) => {
   const [localContent, setLocalContent] = useState(content);
@@ -23,7 +24,7 @@ const MarkdownEditor = ({ content = '', onChange }: EditorProps) => {
       <div className="p-3 border border-gray-200 rounded-md bg-gray-50">
         <h4 className="font-medium text-gray-700 mb-2">Preview:</h4>
         <div className="prose max-w-none">
-          {localContent || <span className="text-gray-400">Markdown preview will appear here</span>}
+          <MarkdownRender>{localContent || "Markdown preview will appear here"}</MarkdownRender>
         </div>
       </div>
     </div>
