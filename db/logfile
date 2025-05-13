@@ -1,0 +1,13 @@
+2025-04-30 08:10:05.555 UTC [9495] LOG:  starting PostgreSQL 17.4 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 14.2.1 20250207, 64-bit
+2025-04-30 08:10:05.557 UTC [9495] LOG:  listening on IPv6 address "::1", port 5432
+2025-04-30 08:10:05.557 UTC [9495] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-04-30 08:10:05.558 UTC [9495] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2025-04-30 08:10:05.560 UTC [9495] LOG:  database system is shut down
+2025-04-30 08:19:34.668 UTC [10545] LOG:  starting PostgreSQL 17.4 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 14.2.1 20250207, 64-bit
+2025-04-30 08:19:34.669 UTC [10545] LOG:  listening on IPv6 address "::1", port 5432
+2025-04-30 08:19:34.670 UTC [10545] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-04-30 08:19:34.670 UTC [10545] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2025-04-30 08:19:34.675 UTC [10548] LOG:  database system was shut down at 2025-04-30 08:07:12 UTC
+2025-04-30 08:19:34.679 UTC [10545] LOG:  database system is ready to accept connections
+2025-05-12 23:59:58.852 GMT [53429] LOG:  skipping missing configuration file "/home/nick/dev/math-elearning-site/db/pgdata/postgresql.auto.conf"
+2025-05-12 23:59:58.853 UTC [53429] FATAL:  data directory "/home/nick/dev/math-elearning-site/db/pgdata" does not exist

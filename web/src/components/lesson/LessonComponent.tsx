@@ -20,18 +20,14 @@ export const LessonComponent = ({
     onCompleteLesson,
     isFinalQuestion,
 }: LessonComponentProps) => {
+    console.log('Rendering content:', content);
+
     const handleAnswerChange = (value: string | number) => {
         onAnswerChange?.(index, value);
     };
 
     return (
         <div className={`mb-8 ${isCurrent ? 'current-content' : 'completed-content'}`}>
-            <div className="mb-2 font-medium">
-                {content.type === 'markdown' && 'Explanation'}
-                {content.type === 'question' && 'Question'}
-                {content.type === 'visualization' && 'Interactive'}
-                {content.type === 'video' && 'Video'}
-            </div>
             
             {content.type === 'markdown' ? (
                 <>
@@ -39,7 +35,7 @@ export const LessonComponent = ({
                     {isCurrent && (
                         <button
                             onClick={onContinue}
-                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            className="mt-4 bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 border-b-4 border-gray-700 rounded-full"
                         >
                             Continue
                         </button>
@@ -66,7 +62,7 @@ export const LessonComponent = ({
                     <VisualizationComponent content={content} />
                     {isCurrent && <button
                         onClick={onContinue}
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        className="mt-4 bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 border-b-4 border-gray-700 rounded-full"
                     >
                         Continue
                     </button>}
@@ -76,7 +72,7 @@ export const LessonComponent = ({
                     <VideoComponent content={content} />
                     {isCurrent && <button
                         onClick={onContinue}
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        className="mt-4 bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 border-b-4 border-gray-700 rounded-full"
                     >
                         Continue
                     </button>}

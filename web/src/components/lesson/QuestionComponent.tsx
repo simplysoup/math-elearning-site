@@ -47,7 +47,7 @@ export const QuestionComponent = ({
                     const isSelected = userAnswer === optionIndex;
                     const isCorrectAnswer = optionIndex === content.data.correct_answer;
                     const isIncorrectAttempt = showError && isSelected;
-                    const showAsCorrect = isChecking && isCorrectAnswer && isSelected;
+                    const showAsCorrect = isChecking && isCorrectAnswer;
 
                     return (
                         <button
@@ -56,7 +56,7 @@ export const QuestionComponent = ({
                                 ${showAsCorrect ? 'bg-green-100 border-green-300' : ''}
                                 ${isIncorrectAttempt ? 'bg-gray-100 border-gray-300 text-gray-400' : ''}
                                 ${isSelected && !isChecking ? 'bg-blue-100 border-blue-300' : ''}
-                                ${!isSelected && !isChecking ? 'hover:bg-gray-100' : ''}`}
+                                ${!isSelected && !isChecking ? 'hover:bg-gray-50' : ''}`}
                             onClick={() => onAnswerChange?.(optionIndex)}
                         >
                             <TextWithLatex text={option} />
@@ -70,12 +70,10 @@ export const QuestionComponent = ({
     const isCorrect = isChecking && !showError && userAnswer === content.data.correct_answer;
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 p-4 bg-gray-100 rounded">
             {/* Question bubble */}
-            <div className="bg-gray-100 p-4 rounded-lg">
-                <h3 className="font-bold">
-                    <TextWithLatex text={content.data.question} />
-                </h3>
+            <div className="p-4 rounded-lg">
+                <TextWithLatex text={content.data.question} />
             </div>
 
             {/* Answer options */}
@@ -95,7 +93,7 @@ export const QuestionComponent = ({
             {!isChecking && isCurrent && (
                 <button
                     onClick={onCheckAnswer}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 border-b-4 border-gray-700 rounded-full"
                     disabled={userAnswer === null || userAnswer === undefined}
                 >
                     Check Answer

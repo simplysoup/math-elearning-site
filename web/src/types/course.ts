@@ -8,6 +8,7 @@ export interface MarkdownContent extends ContentBase {
       text: string;
       format: 'plain' | 'latex';
   };
+  isCurrent: boolean;
 }
 
 export interface VisualizationContent extends ContentBase {

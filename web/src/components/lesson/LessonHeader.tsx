@@ -40,7 +40,6 @@ export const LessonHeader = ({ course, chapter, lesson }: { course: Course; chap
             </nav>
 
             <h1 className="text-3xl font-bold mb-2">{lesson.title}</h1>
-            <p className="text-gray-600 mb-6">{lesson.description}</p>
         </div>
     );
 };
