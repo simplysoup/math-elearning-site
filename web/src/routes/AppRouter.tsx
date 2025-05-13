@@ -6,6 +6,7 @@ import {
 import LandingPage from "../pages/LandingPage";
 import CoursePage from "../pages/CoursePage";
 import LessonPage from "../pages/LessonPage";
+import EditorSaveWrapper from "./EditorSaveWrapper"
 import AboutPage from "../pages/AboutPage";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
             { 
                 path: "courses/:courseId/chapters/:chapterId/lessons/:lessonId",
                 element: <LessonPage />,
+            },
+            { 
+                path: "editor",
+                element: <EditorSaveWrapper />,
             },
             { 
                 path: "about",
