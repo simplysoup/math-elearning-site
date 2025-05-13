@@ -1,0 +1,71 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "title": "Foundational Algebra",
+      "description": "Master core algebraic concepts",
+      "tags": ["algebra", "math"],
+      "image": "src/assets/algebra.jpeg",
+      "chapters": [
+        {
+          "id": 1,
+          "course_id": 1,
+          "title": "Variables & Expressions",
+          "description": "Introduction to algebraic variables",
+          "image": "/images/algebra-variables.jpg",
+          "lessons": [
+            {
+              "id": 1,
+              "course_id": 1,
+              "chapter_id": 1,
+              "title": "Algebraic Variables",
+              "description": "Understanding variables in algebra",
+              "contents": [
+                {
+                  "type": "markdown",
+                  "data": {
+                    "text": "In algebra, variables (like $x$ or $y$) represent unknown values. They follow the same arithmetic rules as numbers.\n\nExample:\nIf $x = 3$ and $y = 5$:\n\n1. Addition: $x + y = 3 + 5 = 8$\n2. Multiplication: $x \\times y = 3 \\times 5 = 15$\n3. Combined: $2x + 3y = 2(3) + 3(5) = 21$",
+                    "format": "latex"
+                  }
+                },
+                {
+                  "type": "question",
+                  "data": {
+                    "format": "multiple_choice",
+                    "question": "What does $3x + 2x$ simplify to when $x=4$?",
+                    "options": [
+                      "20",
+                      "24",
+                      "80",
+                      "16"
+                    ],
+                    "correct_answer": 0,
+                    "explanation": "Combine like terms: $3x + 2x = 5x$. When $x=4$, $5x = 20$.",
+                    "visualization": false
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "data": {
+                    "text": "The distributive property connects multiplication and addition:\n\n$a(b + c) = ab + ac$\n\nExample:\n$3(2x + 4) = 6x + 12$\n\nThis works for subtraction too:\n$2(5y - 3) = 10y - 6$",
+                    "format": "latex"
+                  }
+                },
+                {
+                  "type": "question",
+                  "data": {
+                    "format": "short_answer",
+                    "question": "Expand: $4(3x - 2)$",
+                    "correct_answer": "12x - 8",
+                    "explanation": "Multiply both terms by 4: $4 \\times 3x = 12x$ and $4 \\times (-2) = -8$.",
+                    "visualization": false
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
