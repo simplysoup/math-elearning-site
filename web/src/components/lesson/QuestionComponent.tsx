@@ -1,5 +1,5 @@
 import { QuestionContent } from "../../types/course";
-import { TextWithLatex } from "./TextWithLatex";
+import MarkdownRender from "../../utils/MarkdownRender";
 
 interface QuestionComponentProps {
     content: QuestionContent;
@@ -59,7 +59,7 @@ export const QuestionComponent = ({
                                 ${!isSelected && !isChecking ? 'hover:bg-gray-50' : ''}`}
                             onClick={() => onAnswerChange?.(optionIndex)}
                         >
-                            <TextWithLatex text={option} />
+                            <MarkdownRender>{option}</MarkdownRender>
                         </button>
                     );
                 })}
@@ -73,7 +73,7 @@ export const QuestionComponent = ({
         <div className="space-y-4 p-4 bg-gray-100 rounded">
             {/* Question bubble */}
             <div className="p-4 rounded-lg">
-                <TextWithLatex text={content.data.question} />
+                <MarkdownRender>{content.data.question}</MarkdownRender>
             </div>
 
             {/* Answer options */}
@@ -118,7 +118,7 @@ export const QuestionComponent = ({
             {/* Incorrect answer feedback */}
             {isChecking && showError && (
                 <div className="bg-yellow-100 p-4 rounded-lg border border-yellow-200">
-                    <TextWithLatex text={"That's incorrect. Try again."} />
+                    <MarkdownRender>{"That's incorrect. Try again."}</MarkdownRender>
                     <div className="flex space-x-3 mt-3">
                         <button
                             onClick={() => onAnswerChange?.(content.data.correct_answer)}
@@ -140,7 +140,7 @@ export const QuestionComponent = ({
             {(showExplanation || !isCurrent ) && (
                 <div className="bg-gray-200 p-4 rounded-lg">
                     <p><b>Explanation:</b></p>
-                    <TextWithLatex text={content.data.explanation || "No explanation available."} />
+                    <MarkdownRender>{content.data.explanation || "No explanation available."}</MarkdownRender>
                 </div>
             )}
 

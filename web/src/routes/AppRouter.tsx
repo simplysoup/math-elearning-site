@@ -9,7 +9,6 @@ import LessonPage from "../pages/LessonPage";
 import EditorSaveWrapper from "./EditorSaveWrapper"
 import AboutPage from "../pages/AboutPage";
 import Navbar from "../components/common/Navbar";
-import Footer from "../components/common/Footer";
 
 const Layout = () => (
     <div className="min-h-screen flex flex-col">
@@ -17,7 +16,6 @@ const Layout = () => (
         <main className="flex-grow p-4">
             <Outlet />
         </main>
-        <Footer />
     </div>
 );
 
