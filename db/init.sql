@@ -4,6 +4,42 @@ BEGIN;
 -- Create ENUM types
 CREATE TYPE content_type AS ENUM ('markdown', 'question', 'video');
 CREATE TYPE question_format AS ENUM ('multiple_choice', 'short_answer');
+CREATE TYPE auth_provider AS ENUM ('email', 'google', 'github', 'apple', 'microsoft');
+
+CREATE TYPE content_type AS ENUM ('markdown', 'question', 'video');
+CREATE TYPE question_format AS ENUM ('multiple_choice', 'short_answer');
+
+-- Users table with authentication support
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE,
+    email VARCHAR(255) UNIQUE,
+    email_verified BOOLEAN DEFAULT FALSE,
+    phone VARCHAR(20) UNIQUE,
+    phone_verified BOOLEAN DEFAULT FALSE,
+    password_hash VARCHAR(255),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    avatar_url VARCHAR(255),
+    bio TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+-- User authentication providers (for external auth)
+CREATE TABLE user_auth_providers (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    provider auth_provider NOT NULL,
+    provider_id VARCHAR(255) NOT NULL,  -- Unique ID from provider
+    provider_email VARCHAR(255),
+    provider_data JSONB,  -- Additional provider-specific data
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (provider, provider_id)
+);
 
 -- Courses table
 CREATE TABLE courses (
@@ -12,13 +48,45 @@ CREATE TABLE courses (
     description TEXT,
     image_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Course creators (users with edit access to specific courses)
+CREATE TABLE course_creators (
+    course_id INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    can_edit BOOLEAN DEFAULT TRUE,
+    can_publish BOOLEAN DEFAULT FALSE,
+    can_manage_users BOOLEAN DEFAULT FALSE,
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    assigned_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    PRIMARY KEY (course_id, user_id)
+);
+
+-- Course students (users who have participated in courses)
+CREATE TABLE course_students (
+    course_id INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP,
+    progress INTEGER DEFAULT 0,  -- 0-100 percentage
+    last_accessed TIMESTAMP,
+    PRIMARY KEY (course_id, user_id)
+);
+
+-- System administrators (global admins)
+CREATE TABLE system_admins (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    assigned_by INTEGER REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Tags table
 CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL
+    name VARCHAR(50) UNIQUE NOT NULL,
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Course-Tags junction table
@@ -115,6 +183,7 @@ WITH content AS (
   VALUES (1, 'markdown', 1) RETURNING id
 )
 INSERT INTO markdown_contents (content_id, text, format)
+
 SELECT id, 'In algebra, variables (like $x$ or $y$) represent unknown values...', 'latex'
 FROM content;
 

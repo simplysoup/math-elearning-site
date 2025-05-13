@@ -14,9 +14,9 @@ services:
     build: ./api
     environment:
       - DATABASE_URL=postgres://learn:example@db:5432/learn
-      - PORT=8000  # Match Uvicorn default
+      - PORT=8000
     ports:
-      - "8000:8000"  # Update port mapping
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
