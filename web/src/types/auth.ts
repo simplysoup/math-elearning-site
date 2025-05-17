@@ -10,5 +10,11 @@ export interface AuthResponse {
 }
 
 export interface ApiError {
-  detail: string;
+  detail: string | Array<{
+    type: string;
+    loc: string[];
+    msg: string;
+    input: string;
+    ctx?: Record<string, unknown>;
+  }>;
 }
