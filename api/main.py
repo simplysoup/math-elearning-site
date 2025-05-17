@@ -1,9 +1,13 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 from database import engine, get_db
 from models import Base, Course, Chapter, Lesson, LessonContent, MarkdownContent, Question, QuestionOption, ShortAnswerQuestion
-from schemas import LessonContentOut
+from schemas import LessonContentOut, UserCreate, UserLogin
+from auth import register_user, login_user
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -19,6 +23,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- Auth Endpoints ---
+
+@app.post("/register")
+def register(user_data: UserCreate, db: Session = Depends(get_db)):
+    return register_user(user_data, db)
+
+@app.post("/login")
+def login(user: UserLogin, db: Session = Depends(get_db)):
+    return login_user(user.email, user.password, db)
+
+@app.post("/verify-email/{token}")
+def verify_email(token: str, db: Session = Depends(get_db)):
+    email = verify_email_token(token)
+    if not email:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.email_verified = True
+    db.commit()
+    return {"message": "Email verified successfully"}
 
 # --- Courses Endpoints ---
 @app.post("/courses/")

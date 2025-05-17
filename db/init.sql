@@ -1,5 +1,6 @@
 -- Initialize the entire math e-learning database structure
-BEGIN;
+CREATE SCHEMA IF NOT EXISTS learn;
+SET search_path TO learn;
 
 -- Create ENUM types
 CREATE TYPE content_type AS ENUM ('markdown', 'question', 'video');
