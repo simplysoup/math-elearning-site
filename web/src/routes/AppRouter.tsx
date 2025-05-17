@@ -9,6 +9,7 @@ import LessonPage from "../pages/LessonPage";
 import EditorSaveWrapper from "./EditorSaveWrapper"
 import AboutPage from "../pages/AboutPage";
 import Navbar from "../components/common/Navbar";
+import AuthPage from "../pages/AuthPage";
 
 const Layout = () => (
     <div className="min-h-screen flex flex-col">
@@ -41,6 +42,11 @@ const router = createBrowserRouter([
                 path: "about",
                 element: <AboutPage />,
             },
+            { 
+                path: "login",
+                element: <AuthPage />,
+            },
+            
             { path: "*", element: <LandingPage /> }, 
         ],
     },

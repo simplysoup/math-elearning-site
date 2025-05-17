@@ -11,3 +11,13 @@
 2025-04-30 08:19:34.679 UTC [10545] LOG:  database system is ready to accept connections
 2025-05-12 23:59:58.852 GMT [53429] LOG:  skipping missing configuration file "/home/nick/dev/math-elearning-site/db/pgdata/postgresql.auto.conf"
 2025-05-12 23:59:58.853 UTC [53429] FATAL:  data directory "/home/nick/dev/math-elearning-site/db/pgdata" does not exist
+2025-05-16 02:21:33.739 GMT [62558] LOG:  skipping missing configuration file "/home/nick/dev/math-elearning-site/db/pgdata/postgresql.auto.conf"
+2025-05-16 02:21:33.742 UTC [62558] FATAL:  data directory "/home/nick/dev/math-elearning-site/db/pgdata" does not exist
+2025-05-16 02:21:43.550 GMT [62712] LOG:  skipping missing configuration file "/home/nick/dev/math-elearning-site/db/pgdata/postgresql.auto.conf"
+2025-05-16 02:21:43.552 UTC [62712] FATAL:  data directory "/home/nick/dev/math-elearning-site/db/pgdata" does not exist
+2025-05-16 02:21:45.508 GMT [62729] LOG:  skipping missing configuration file "/home/nick/dev/math-elearning-site/db/pgdata/postgresql.auto.conf"
+2025-05-16 02:21:45.510 UTC [62729] FATAL:  data directory "/home/nick/dev/math-elearning-site/db/pgdata" does not exist
+2025-05-16 02:21:46.425 GMT [62739] LOG:  skipping missing configuration file "/home/nick/dev/math-elearning-site/db/pgdata/postgresql.auto.conf"
+2025-05-16 02:21:46.426 UTC [62739] FATAL:  data directory "/home/nick/dev/math-elearning-site/db/pgdata" does not exist
+2025-05-16 02:22:01.667 GMT [62789] LOG:  skipping missing configuration file "/home/nick/dev/math-elearning-site/db/pgdata/postgresql.auto.conf"
+2025-05-16 02:22:01.668 UTC [62789] FATAL:  data directory "/home/nick/dev/math-elearning-site/db/pgdata" does not exist

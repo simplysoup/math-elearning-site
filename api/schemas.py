@@ -1,5 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import List, Union, Literal
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    username: str | None = None
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
 
 class MarkdownData(BaseModel):
     text: str
