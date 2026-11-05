@@ -10,6 +10,7 @@ import CoursePage from "../pages/CoursePage";
 import LessonPage from "../pages/LessonPage";
 import EditorSaveWrapper from "./EditorSaveWrapper"
 import AboutPage from "../pages/AboutPage";
+import ProtectedRoute from "../components/common/ProtectedRoute";
 import Navbar from "../components/common/Navbar";
 
 
@@ -36,9 +37,12 @@ const router = createBrowserRouter([
                 path: "courses/:courseId/chapters/:chapterId/lessons/:lessonId",
                 element: <LessonPage />,
             },
-            { 
+            {
                 path: "editor",
-                element: <EditorSaveWrapper />,
+                element: <ProtectedRoute />,
+                children: [
+                    { index: true, element: <EditorSaveWrapper /> },
+                ],
             },
             { 
                 path: "about",
@@ -48,9 +52,12 @@ const router = createBrowserRouter([
                 path: "login",
                 element: <AuthPage />,
             },
-            { 
+            {
                 path: "profile",
-                element: <ProfilePage />,
+                element: <ProtectedRoute />,
+                children: [
+                    { index: true, element: <ProfilePage /> },
+                ],
             },
             
             { path: "*", element: <LandingPage /> }, 

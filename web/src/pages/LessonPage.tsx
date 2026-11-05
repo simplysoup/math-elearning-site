@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { API_BASE_URL } from '../api';
+import { API_BASE_URL, apiFetch } from '../api';
+import { useAuth } from '../components/auth/AuthContext';
 import { useParams, useNavigate } from "react-router-dom";
 import { Course, Chapter, Lesson, LessonContent } from '../types/course';
 import { LessonHeader } from '../components/lesson/LessonHeader';
@@ -19,6 +20,7 @@ type CompletedContent = {
 const LessonPage = () => {
   const { courseId, chapterId, lessonId } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const contentEndRef = useRef<HTMLDivElement>(null);
 
   const [course, setCourse] = useState<Course | null>(null);
@@ -164,6 +166,13 @@ const LessonPage = () => {
           userAnswer: userAnswers[currentIndex]
         }
       ]);
+    }
+
+    // Persist completion for logged-in users (auto-enrolls them in the
+    // course). Anonymous users can still finish the lesson locally;
+    // a failed call here never blocks leaving the lesson.
+    if (isAuthenticated && lessonId) {
+      apiFetch(`/lessons/${lessonId}/complete`, { method: 'POST' }).catch(() => {});
     }
 
     navigate(`/courses/${courseId}`);

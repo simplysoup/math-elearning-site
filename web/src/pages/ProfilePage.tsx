@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE_URL } from '../api';
+import { apiFetch } from '../api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import { ApiError } from '../types/auth';
@@ -13,38 +13,52 @@ interface ExtendedUser {
   avatar_url?: string;
 }
 
+interface EnrolledCourse {
+  course_id: number;
+  title: string;
+  description?: string | null;
+  image_url?: string | null;
+  progress: number;
+  total_lessons: number;
+  completed_lessons: number;
+  enrolled_at?: string | null;
+  last_accessed?: string | null;
+}
+
 const ProfilePage: React.FC = () => {
-  const { token, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<ExtendedUser | null>(null);
+  const [courses, setCourses] = useState<EnrolledCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    if (!isAuthenticated || !token) {
+    if (!isAuthenticated) {
       navigate('/login');
       return;
     }
 
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/user`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+        const response = await apiFetch('/user');
 
         if (!response.ok) {
           const errorData: ApiError = await response.json();
           throw new Error(
-            typeof errorData.detail === 'string' 
-              ? errorData.detail 
+            typeof errorData.detail === 'string'
+              ? errorData.detail
               : errorData.detail[0]?.msg || 'Failed to fetch profile'
           );
         }
 
         const data: ExtendedUser = await response.json();
         setProfile(data);
+
+        const coursesRes = await apiFetch('/me/courses');
+        if (coursesRes.ok) {
+          setCourses(await coursesRes.json());
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {
@@ -53,7 +67,7 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchProfile();
-  }, [isAuthenticated, token, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     logout();
@@ -127,6 +141,44 @@ const ProfilePage: React.FC = () => {
           <div>
             <h2 className="text-lg font-semibold">Username</h2>
             <p className="text-gray-700">{profile.username}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold mb-3">My courses</h2>
+        {courses.length === 0 ? (
+          <p className="text-gray-600 text-sm">
+            You're not enrolled in any courses yet. Finish a lesson and it
+            will show up here with your progress.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {courses.map((course) => (
+              <div
+                key={course.course_id}
+                className="border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50"
+                onClick={() => navigate(`/courses/${course.course_id}`)}
+              >
+                <div className="flex justify-between items-baseline gap-4">
+                  <h3 className="font-medium">{course.title}</h3>
+                  <span className="text-sm text-gray-600 whitespace-nowrap">
+                    {course.completed_lessons}/{course.total_lessons} lessons · {course.progress}%
+                  </span>
+                </div>
+                <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-indigo-600 rounded-full"
+                    style={{ width: `${course.progress}%` }}
+                  />
+                </div>
+                {course.last_accessed && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Last studied {new Date(course.last_accessed).toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>

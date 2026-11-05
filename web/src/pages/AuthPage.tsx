@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { login, register } from '../services/auth_service';
 import { useAuth } from '../components/auth/AuthContext';
 
@@ -12,6 +12,9 @@ const AuthPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login: authLogin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  // Where to go after login: the page that sent the user here, else home.
+  const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,13 +55,22 @@ const AuthPage: React.FC = () => {
         return;
       }
 
-      authLogin(response.access_token, {
-        email: response.user?.email || email,
-        username: response.user?.username || fullName,
-        password: response.user?.password || password
-      });
-      
-      navigate('/');
+      if (!response.access_token || !response.refresh_token) {
+        setError('The server did not return a session. Please try again.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Store tokens + public profile only. A password is never stored.
+      await authLogin(
+        response.access_token,
+        response.refresh_token,
+        response.user ?? (response.id !== undefined
+          ? { id: response.id, email: response.email ?? email, username: response.username ?? fullName }
+          : undefined),
+      );
+
+      navigate(from, { replace: true });
     } catch (err) {
       setError('An unexpected error occurred');
       setIsLoading(false);

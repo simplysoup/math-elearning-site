@@ -51,9 +51,11 @@ const Navbar = () => {
             <Link to="/" className="hover:text-yellow-500">
               Home
             </Link>
-            <Link to="/editor" className="hover:text-yellow-500">
-              Editor
-            </Link>
+            {isAuthenticated && (
+              <Link to="/editor" className="hover:text-yellow-500">
+                Editor
+              </Link>
+            )}
             <Link to="/about" className="hover:text-yellow-500">
               About
             </Link>
@@ -119,18 +121,14 @@ const Navbar = () => {
             >
               Home
             </Link>
-            <Link
-              to="/courses"
-              className="text-xl text-center py-2 hover:text-yellow-500"
-            >
-              Courses
-            </Link>
-            <Link
-              to="/forums"
-              className="text-xl text-center py-2 hover:text-yellow-500"
-            >
-              Forums
-            </Link>
+            {isAuthenticated && (
+              <Link
+                to="/editor"
+                className="text-xl text-center py-2 hover:text-yellow-500"
+              >
+                Editor
+              </Link>
+            )}
             <Link
               to="/about"
               className="text-xl text-center py-2 hover:text-yellow-500"

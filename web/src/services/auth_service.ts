@@ -1,57 +1,32 @@
-import { User, AuthResponse, ApiError } from '../types/auth';
+import { AuthResponse, ApiError } from '../types/auth';
 
 import { API_BASE_URL } from '../api';
 
-export const register = async (user: User): Promise<AuthResponse | ApiError> => {
+async function postJson(path: string, body: unknown): Promise<AuthResponse | ApiError> {
   try {
-    const response = await fetch(`${API_BASE_URL}/register`, {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify(user),
+      body: JSON.stringify(body),
     });
 
     const data = await response.json();
-    if (!response.ok) {
-      return data; // Return the full error object
-    }
-    return data;
+    return data; // Ok or error object; the caller checks 'detail'.
   } catch (error) {
     return {
       detail: 'Network error - failed to connect to server',
     };
   }
-};
+}
 
-export const login = async (credentials: { email: string; password: string }): Promise<AuthResponse | ApiError> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(credentials),
-    });
+// /register returns the tokens and the public user (auto-login).
+export const register = (user: { email: string; password: string; username?: string }): Promise<AuthResponse | ApiError> =>
+  postJson('/register', user);
 
-    const data = await response.json();
-    if (!response.ok) {
-      return data; // Return the full error object
-    }
-    return {
-      access_token: data.access_token,
-      user: {
-        email: credentials.email,
-        password: credentials.password,
-      }
-    };
-  } catch (error) {
-    return {
-      detail: 'Network error - failed to connect to server',
-    };
-  }
-};
+// /login returns tokens only; the caller fetches /user for the profile.
+export const login = (credentials: { email: string; password: string }): Promise<AuthResponse | ApiError> =>
+  postJson('/login', credentials);

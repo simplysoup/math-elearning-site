@@ -5,12 +5,14 @@ const MultipleChoiceEditor = ({
   question = '',
   options = ['', ''],
   correctAnswer = 0,
+  explanation = '',
   onChange
 }: EditorProps) => {
   const [localState, setLocalState] = useState({
     question,
     options,
-    correctAnswer
+    correctAnswer,
+    explanation,
   });
 
   useEffect(() => {
@@ -92,13 +94,24 @@ const MultipleChoiceEditor = ({
         ))}
       </div>
 
-      <button 
+      <button
         onClick={addOption}
         disabled={localState.options.length >= 6}
         className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 text-sm disabled:opacity-50"
       >
         + Add Option (Max: 6)
       </button>
+
+      <input
+        type="text"
+        value={localState.explanation}
+        onChange={(e) => setLocalState(prev => ({
+          ...prev,
+          explanation: e.target.value
+        }))}
+        placeholder="Explanation (shown after answering, optional)"
+        className="w-full p-2 border border-gray-300 rounded-md"
+      />
     </div>
   );
 };
