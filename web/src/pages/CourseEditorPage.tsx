@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ContentBlock, ContentBlockType } from '../types/editor';
 import MarkdownEditor from '../components/editor/MarkdownEditor';
@@ -21,6 +21,12 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
   const [isDirty, setIsDirty] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveError, setSaveError] = useState<string>('');
+  // What the server last had (initial content, then whatever was saved).
+  // The sub-editors echo the current data back through a debounced
+  // onChange on every parent re-render; that echo must not count as an
+  // edit, resurrect a draft right after a save, or hide the "Saved."
+  // confirmation.
+  const lastSavedRef = useRef<string>(JSON.stringify(initialContent));
 
   // Drafts are per lesson, so switching lessons never mixes content.
   const draftKey = lessonId !== null ? `courseDraft:${lessonId}` : 'courseDraft';
@@ -75,10 +81,12 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
   }, []);
 
   useEffect(() => {
-    if (blocks.length > 0) {
-      localStorage.setItem(draftKey, JSON.stringify(blocks));
-      setIsDirty(true);
-    }
+    if (blocks.length === 0) return;
+    // Only a real change is a draft. An unchanged echo of the saved
+    // content writes nothing and leaves the saved state alone.
+    if (JSON.stringify(blocks) === lastSavedRef.current) return;
+    localStorage.setItem(draftKey, JSON.stringify(blocks));
+    setIsDirty(true);
   }, [blocks, draftKey]);
 
   const deleteBlock = (id: string) => {
@@ -105,6 +113,7 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
       await onSave(blocks);
       // Clear the draft only once the server has the content.
       localStorage.removeItem(draftKey);
+      lastSavedRef.current = JSON.stringify(blocks);
       setIsDirty(false);
       setSaveStatus('saved');
     } catch (err) {
@@ -234,7 +243,11 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
                   {block.type === 'markdown' && (
                     <MarkdownEditor
                       content={block.data.text}
-                      onChange={(text) => updateBlock(block.id, { ...block.data, text })}
+                      // MarkdownEditor emits { text } — the object, not
+                      // the string. Spreading it as the text field used
+                      // to nest it ({ text: { text } }), which the API
+                      // rejected with a 422 on every save.
+                      onChange={({ text }) => updateBlock(block.id, { ...block.data, text })}
                     />
                   )}
 
