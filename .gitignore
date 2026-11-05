@@ -23,3 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+db/pgdata/
+*.db
+*.sqlite3
