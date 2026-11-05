@@ -1,34 +1,33 @@
+# Deployment note: create a .env at the repo root before the first run:
+#   POSTGRES_PASSWORD=<a strong password>
+#   SECRET_KEY=<a long random string>
+# Only the web port (3000) is published. The API is reached through
+# nginx's same-origin /api proxy and the database is internal only.
 services:
   db:
     build: ./db
     environment:
-      POSTGRES_PASSWORD: ***REMOVED***
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set}
       POSTGRES_USER: learn
       POSTGRES_DB: learn
     volumes:
       - pg_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
 
   api:
     build: ./api
     environment:
-      - DATABASE_URL=***REMOVED***
+      - DATABASE_URL=postgresql://learn:${POSTGRES_PASSWORD}@db:5432/learn
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY is not set}
       - PORT=8000
-    ports:
-      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
 
   web:
-    # Vite bakes VITE_API_URL into the JS at build time, so it must be a
-    # build arg, not just a runtime environment variable. The browser then
-    # calls the API directly at this URL (ports are published on the host).
+    # No VITE_API_URL build arg: the frontend uses the relative /api
+    # base, which nginx proxies to the api service.
     build:
       context: ./web
-      args:
-        - VITE_API_URL=http://localhost:8000
     ports:
       - "3000:3000"
     depends_on:
