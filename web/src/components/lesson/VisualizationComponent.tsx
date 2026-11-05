@@ -91,7 +91,7 @@ export const VisualizationComponent = ({
                 <line x1={PAD_L} y1={toPy(0)} x2={W - PAD_R} y2={toPy(0)} stroke="#9ca3af" />
                 <line x1={PAD_L} y1={PAD_T} x2={PAD_L} y2={H - PAD_B} stroke="#9ca3af" />
                 <text x={W - PAD_R} y={H - 10} textAnchor="end" fontSize="11" fill="#6b7280">x</text>
-                <text x={12} y={PAD_T + 4} fontSize="11" fill="#6b7280">y</text>
+                <text x={PAD_L} y={12} textAnchor="middle" fontSize="11" fill="#6b7280">y</text>
 
                 <path d={line(a)} fill="none" stroke="#2563eb" strokeWidth="2" strokeDasharray="6 4" />
                 <path d={line(b)} fill="none" stroke="#16a34a" strokeWidth="2" strokeDasharray="6 4" />
