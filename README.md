@@ -35,13 +35,13 @@ web/               React + TypeScript + Vite frontend
   src/pages/       Landing, Course, Lesson, About, Auth, Profile pages
   src/components/  Auth, lesson, and editor components
   README.md        Stock Vite template — not project documentation
-api/               Python FastAPI backend (uvicorn main:app, port 8000)
+api/               Python FastAPI backend (uvicorn main:app, port 18766)
   main.py          FastAPI app: /register, /login, /verify-email/{token},
                    /courses/, /courses/{course_id}
   auth.py, models.py, schemas.py, database.py, passwords.py, oauth.py, utils.py
   requirements.txt FastAPI, SQLAlchemy, psycopg2, python-jose, argon2, etc.
 db/                PostgreSQL setup (Dockerfile, start.sh)
-docker-compose.yml Services: db (internal), api (internal), web (3000)
+docker-compose.yml Services: db (internal), api (internal), web (18765)
 ```
 
 ## Known limitations — read before running
@@ -54,11 +54,10 @@ docker-compose.yml Services: db (internal), api (internal), web (3000)
 - **Frontend entry point is not `App.tsx`.** `web/src/App.tsx` is the
   stock Vite + React counter template and is not used by `main.tsx`,
   which renders `AppRouter` instead.
-- **Compose wiring is inconsistent (unverified).** The compose file maps
-  the web service to port 3000 and the API to 8000, but sets
-  `VITE_API_URL` to `http://localhost:3001`, which does not match the
-  API port. Running the full stack has not been verified; check and fix
-  that value before relying on it.
+- **Compose wiring.** The compose file maps the web service to port
+  18765 and the API to 18766 (internal only). The browser reaches the
+  API through nginx's same-origin /api proxy; no VITE_API_URL is set
+  in a production build.
 - **No root README existed before this file.** `web/README.md` is still
   the stock Vite template and was intentionally left alone here.
 
@@ -73,7 +72,7 @@ cp web/.env.example web/.env       # local dev only; optional
 #   POSTGRES_PASSWORD=<a strong password>
 #   SECRET_KEY=<a long random string>
 docker compose up --build
-# web on 3000; the API is reached through the same-origin /api proxy,
+# web on 18765; the API is reached through the same-origin /api proxy,
 # the database is not published to the host.
 ```
 
@@ -86,7 +85,7 @@ empty (`api/seed.py`). Schema changes go in new Alembic revisions
 For frontend development alone, `web/package.json` defines
 `npm run dev` (Vite), `npm run build` (`tsc -b && vite build`),
 `npm run lint`, and `npm run preview`. The API runs
-`uvicorn main:app --host 0.0.0.0` on port 8000 (no `--reload` in
+`uvicorn main:app --host 0.0.0.0` on port 18766 (no `--reload` in
 the container).
 
 ## Cleanup flags (actioned Nov 5, 2026)

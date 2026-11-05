@@ -10,7 +10,7 @@ export default defineConfig({
     // relative /api base unless VITE_API_URL is explicitly set.
     proxy: {
       "/api": {
-        target: "http://localhost:8000",
+        target: "http://localhost:18766",
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
