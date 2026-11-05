@@ -13,7 +13,11 @@ backend, and a PostgreSQL database, composed with Docker.
 
 - Browse courses, chapters, and lessons, with lesson content rendered as
   Markdown and math (the frontend uses `react-markdown`, `marked`,
-  KaTeX/`react-katex`, and DOMPurify).
+  KaTeX/`react-katex`, and DOMPurify), plus interactive visualizations:
+  the first is a "combine like terms" graph (ax + bx) in the Algebraic
+  Variables lesson, rendered as plain SVG with sliders, no extra
+  charting dependency. Visualization blocks are stored as JSON configs
+  in `visualization_contents` and served by the lesson-content endpoint.
 - Auth pages and a profile page exist in the frontend.
 - The backend exposes registration, login, and email verification, plus
   course read/create endpoints (see `api/main.py`).
