@@ -114,6 +114,28 @@ class CourseStudent(Base):
         PrimaryKeyConstraint('course_id', 'user_id', name='pk_course_students'),
     )
 
+class UserLessonProgress(Base):
+    """One row per completed lesson per user.
+
+    Progress is derived from these rows (completed lessons / total
+    lessons in the course); CourseStudent.progress is a cached copy of
+    that percentage, updated when a lesson is completed.
+    """
+
+    __tablename__ = 'user_lesson_progress'
+
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    lesson_id = Column(Integer, ForeignKey('lessons.id', ondelete='CASCADE'), nullable=False)
+    completed_at = Column(DateTime, server_default=func.now())
+
+    user = relationship("User", backref="lesson_progress")
+    lesson = relationship("Lesson", backref="completions")
+
+    __table_args__ = (
+        PrimaryKeyConstraint('user_id', 'lesson_id', name='pk_user_lesson_progress'),
+    )
+
+
 class SystemAdmin(Base):
     __tablename__ = 'system_admins'
 
