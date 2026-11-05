@@ -1,1 +1,1 @@
-{"$schema":"https://openapi.vercel.sh/vercel.json","buildCommand":"npm run build --prefix web","framework":"vite","installCommand":"npm ci --prefix web","outputDirectory":"web/dist"}
+{"$schema":"https://openapi.vercel.sh/vercel.json","buildCommand":"npm run build --prefix web","framework":"vite","installCommand":"npm ci --prefix web","outputDirectory":"web/dist","rewrites":[{"destination":"http://76.13.4.115:8000/:path*","source":"/api/:path*"}]}
