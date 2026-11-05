@@ -82,7 +82,10 @@ export interface Course {
   description: string;
   tags: string[];
   image: string;
-  chapters: Chapter[];
+  // The list endpoint returns counts, not nested rows.
+  chapter_count?: number;
+  lesson_count?: number;
+  chapters?: Chapter[];
 }
 
 // Additional types for component props

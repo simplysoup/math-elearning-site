@@ -210,3 +210,15 @@ def test_enroll_complete_and_progress(client):
     res = client.get("/me/courses", headers=headers2)
     assert len(res.json()) == 1
     assert res.json()[0]["progress"] == 100
+
+
+def test_course_list_returns_chapter_and_lesson_counts(client):
+    res = client.get("/courses/")
+    assert res.status_code == 200, res.text
+    # The suite shares one seeded DB and other tests create courses, so
+    # find the seeded course by title rather than asserting the total.
+    courses = [c for c in res.json() if c["title"] == "Foundational Algebra"]
+    assert len(courses) == 1
+    # The seeded course has exactly 1 chapter with exactly 1 lesson.
+    assert courses[0]["chapter_count"] == 1
+    assert courses[0]["lesson_count"] == 1

@@ -211,7 +211,24 @@ def create_course(
 
 @app.get("/courses/")
 def get_courses(db: Session = Depends(get_db)):
-    return db.query(Course).all()
+    courses = db.query(Course).all()
+    # The list endpoint never included chapters, so the landing page used
+    # to show "0 chapters · 0 lessons" for every course. Return the real
+    # counts instead of the nested rows.
+    return [
+        {
+            "id": course.id,
+            "title": course.title,
+            "description": course.description,
+            "image_url": course.image_url,
+            "created_at": course.created_at,
+            "updated_at": course.updated_at,
+            "created_by": course.created_by,
+            "chapter_count": len(course.chapters),
+            "lesson_count": sum(len(ch.lessons) for ch in course.chapters),
+        }
+        for course in courses
+    ]
 
 @app.get("/courses/{course_id}")
 def get_course(course_id: int, db: Session = Depends(get_db)):

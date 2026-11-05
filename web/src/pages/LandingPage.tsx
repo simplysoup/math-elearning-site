@@ -171,8 +171,8 @@ const LandingPage: React.FC = () => {
                       {course.description}
                     </span>
                     <span className="mt-2 block font-mono text-xs">
-                      {course.chapters?.length || 0} chapters ·{' '}
-                      {course.chapters?.reduce((sum, ch) => sum + (ch.lessons?.length || 0), 0) || 0} lessons
+                      {course.chapter_count ?? course.chapters?.length ?? 0} chapters ·{' '}
+                      {course.lesson_count ?? course.chapters?.reduce((sum, ch) => sum + (ch.lessons?.length || 0), 0) ?? 0} lessons
                     </span>
                   </span>
                   <span className="font-mono text-sm text-pencil whitespace-nowrap">
