@@ -38,4 +38,15 @@ class MarkdownContent(BaseModel):
     type: Literal["markdown"]
     data: MarkdownData
 
-LessonContentOut = Union[QuestionContent, MarkdownContent]
+
+class VisualizationData(BaseModel):
+    engine: str
+    config: dict
+
+
+class VisualizationContent(BaseModel):
+    type: Literal["visualization"]
+    data: VisualizationData
+
+
+LessonContentOut = Union[QuestionContent, MarkdownContent, VisualizationContent]

@@ -13,6 +13,7 @@ class ContentTypeEnum(str, enum.Enum):
     markdown = "markdown"
     question = "question"
     video = "video"
+    visualization = "visualization"
 
 class QuestionFormatEnum(str, enum.Enum):
     multiple_choice = "multiple_choice"
@@ -189,6 +190,7 @@ class LessonContent(Base):
     lesson = relationship("Lesson", back_populates="contents")
     markdown = relationship("MarkdownContent", back_populates="content", uselist=False)
     question = relationship("Question", back_populates="content", uselist=False)
+    visualization = relationship("VisualizationContent", back_populates="content", uselist=False)
 
 
 class MarkdownContent(Base):
@@ -199,6 +201,24 @@ class MarkdownContent(Base):
     format = Column(String(20), nullable=False)
 
     content = relationship("LessonContent", back_populates="markdown")
+
+
+class VisualizationContent(Base):
+    """An interactive visualization block.
+
+    ``config`` is a JSON document describing the visualization, e.g.
+    {"kind": "linear-combine", "a": 3, "b": 2, "x": 4, ...}. The
+    frontend renders it; the API only stores and serves the config,
+    so new visualization kinds need no backend change.
+    """
+
+    __tablename__ = "visualization_contents"
+
+    content_id = Column(Integer, ForeignKey("lesson_contents.id", ondelete="CASCADE"), primary_key=True)
+    engine = Column(String(20), nullable=False, default="custom")
+    config = Column(JSON, nullable=False, default=dict)
+
+    content = relationship("LessonContent", back_populates="visualization")
 
 
 class Question(Base):

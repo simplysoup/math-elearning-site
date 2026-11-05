@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 from database import engine, get_db
-from models import Base, Course, Chapter, Lesson, LessonContent, MarkdownContent, Question, QuestionOption, ShortAnswerQuestion, User
+from models import Base, Course, Chapter, Lesson, LessonContent, MarkdownContent, Question, QuestionOption, ShortAnswerQuestion, User, VisualizationContent
 from schemas import LessonContentOut, UserCreate, UserLogin
 from auth import register_user, login_user, get_current_user
 from utils import verify_email_token
@@ -150,6 +150,18 @@ def get_lesson_content(lesson_id: int, db: Session = Depends(get_db)):
                 "data": {
                     "text": markdown.text,
                     "format": markdown.format
+                }
+            })
+
+        elif content.content_type == 'visualization':
+            viz = db.query(VisualizationContent).filter(VisualizationContent.content_id == content.id).first()
+            if not viz:
+                continue
+            output.append({
+                "type": "visualization",
+                "data": {
+                    "engine": viz.engine,
+                    "config": viz.config,
                 }
             })
 
