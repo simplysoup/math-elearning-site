@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
@@ -10,15 +12,26 @@ from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 
-# Create tables
-Base.metadata.create_all(bind=engine)
-
+# Tables are created by Alembic migrations (api/alembic), run on startup
+# by the entrypoint; see api/entrypoint.sh. Do not create_all here:
+# it would silently diverge from the migration history.
 app = FastAPI()
 
 # --- CORS ---
+# In production the frontend is served by nginx and calls the API through
+# the same-origin /api proxy, so no CORS origin is needed. Direct browser
+# calls (local dev, a separately hosted frontend) need their origin here,
+# set via CORS_ORIGINS (comma-separated). Defaults cover local dev only.
+_cors_origins = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+    ).split(",")
+    if origin.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # or ["*"] to allow all origins (not recommended for prod)
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

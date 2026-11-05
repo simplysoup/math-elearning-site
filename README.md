@@ -40,8 +40,8 @@ api/               Python FastAPI backend (uvicorn main:app, port 8000)
                    /courses/, /courses/{course_id}
   auth.py, models.py, schemas.py, database.py, passwords.py, oauth.py, utils.py
   requirements.txt FastAPI, SQLAlchemy, psycopg2, python-jose, argon2, etc.
-db/                PostgreSQL setup (init.sql, Dockerfile, start.sh)
-docker-compose.yml Services: db (5432), api (8000), web (3000)
+db/                PostgreSQL setup (Dockerfile, start.sh)
+docker-compose.yml Services: db (internal), api (internal), web (3000)
 ```
 
 ## Known limitations — read before running
@@ -62,28 +62,36 @@ docker-compose.yml Services: db (5432), api (8000), web (3000)
 - **No root README existed before this file.** `web/README.md` is still
   the stock Vite template and was intentionally left alone here.
 
-## Running (unverified)
+## Running
 
-These commands follow directly from the Dockerfiles and compose file;
-they have **not** been run against this repository, so treat them as a
-starting point, not a verified setup:
+Secrets live in environment files, never in the repo. Before the first run:
 
 ```bash
+cp api/.env.example api/.env       # set DATABASE_URL and SECRET_KEY
+cp web/.env.example web/.env       # local dev only; optional
+# For compose, also create a .env at the repo root with:
+#   POSTGRES_PASSWORD=<a strong password>
+#   SECRET_KEY=<a long random string>
 docker compose up --build
-# db on 5432, api on 8000, web on 3000 — see the compose note above
+# web on 3000; the API is reached through the same-origin /api proxy,
+# the database is not published to the host.
 ```
+
+On startup the API container runs Alembic migrations (`alembic upgrade
+head`, stamping the baseline if the database was created before
+migrations existed) and seeds the sample course if the database is
+empty (`api/seed.py`). Schema changes go in new Alembic revisions
+(`alembic revision --autogenerate`), never in hand-edited SQL.
 
 For frontend development alone, `web/package.json` defines
 `npm run dev` (Vite), `npm run build` (`tsc -b && vite build`),
-`npm run lint`, and `npm run preview`. The API Dockerfile runs
-`uvicorn main:app --host 0.0.0.0 --reload` on port 8000.
+`npm run lint`, and `npm run preview`. The API runs
+`uvicorn main:app --host 0.0.0.0` on port 8000 (no `--reload` in
+the container).
 
-## Cleanup flags (not actioned)
+## Cleanup flags (actioned Nov 5, 2026)
 
-- A `web/.env` file is committed in this public repository. Its contents
-  are not reproduced here; check whether it contains any real secrets
-  and rotate them if it does, then remove the file from version control.
-- A committed `db/pgdata` directory is present. Database data should
-  normally live in a Docker volume (the compose file already defines a
-  `pg_data` volume), not in the repository. Neither item was deleted
-  or changed as part of adding this README.
+- The previously committed `web/.env` and `db/pgdata` are no longer
+  tracked; both are gitignored. The values they contained were
+  example/placeholder credentials, but they remain in git history —
+  rotate any real secret that was ever committed before deploying.
