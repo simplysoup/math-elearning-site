@@ -1,14 +1,14 @@
 -- Initialize the entire math e-learning database structure
-CREATE SCHEMA IF NOT EXISTS learn;
-SET search_path TO learn;
+-- Tables live in the default (public) schema: the SQLAlchemy models have
+-- no schema set, so creating them in a "learn" schema would leave the API
+-- querying empty public tables while the seed data sat elsewhere.
+-- The second, duplicate CREATE TYPE block was also removed: it failed
+-- on re-run because the types already existed.
 
 -- Create ENUM types
 CREATE TYPE content_type AS ENUM ('markdown', 'question', 'video');
 CREATE TYPE question_format AS ENUM ('multiple_choice', 'short_answer');
 CREATE TYPE auth_provider AS ENUM ('email', 'google', 'github', 'apple', 'microsoft');
-
-CREATE TYPE content_type AS ENUM ('markdown', 'question', 'video');
-CREATE TYPE question_format AS ENUM ('multiple_choice', 'short_answer');
 
 -- Users table with authentication support
 CREATE TABLE users (
