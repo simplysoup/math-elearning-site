@@ -22,17 +22,17 @@ services:
         condition: service_healthy
 
   web:
-    build: ./web
+    # Vite bakes VITE_API_URL into the JS at build time, so it must be a
+    # build arg, not just a runtime environment variable. The browser then
+    # calls the API directly at this URL (ports are published on the host).
+    build:
+      context: ./web
+      args:
+        - VITE_API_URL=http://localhost:8000
     ports:
       - "3000:3000"
-    volumes:
-      - ./web:/app
-      - web_node_modules:/app/node_modules
-    environment:
-      - VITE_API_URL=http://localhost:3001
     depends_on:
       - api
-    working_dir: /app
 
 volumes:
   pg_data:

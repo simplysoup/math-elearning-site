@@ -15,6 +15,11 @@ RUN npm install -g pnpm && \
 # Copy all files
 COPY . .
 
+# Vite inlines VITE_API_URL at build time; the compose file passes it
+# as a build arg (a runtime env var would arrive too late for nginx).
+ARG VITE_API_URL=http://localhost:8000
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build the Vite app
 RUN npm run build
 
