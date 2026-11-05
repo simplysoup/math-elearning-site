@@ -1,6 +1,6 @@
 import { User, AuthResponse, ApiError } from '../types/auth';
 
-const API_BASE_URL = 'http://localhost:8000';
+import { API_BASE_URL } from '../api';
 
 export const register = async (user: User): Promise<AuthResponse | ApiError> => {
   try {

@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from '../api';
 import type { Course, Chapter, Lesson } from '../types/course';
 import { useState, useEffect } from 'react';
 
@@ -19,18 +20,18 @@ const CoursePage = () => {
     const fetchCourseData = async () => {
       try {
         // Fetch course info
-        const resCourse = await fetch(`http://localhost:8000/courses/${courseId}`);
+        const resCourse = await fetch(`${API_BASE_URL}/courses/${courseId}`);
         if (!resCourse.ok) throw new Error("Course not found");
         const courseData = await resCourse.json();
 
         // Fetch chapters
-        const resChapters = await fetch(`http://localhost:8000/courses/${courseId}/chapters/`);
+        const resChapters = await fetch(`${API_BASE_URL}/courses/${courseId}/chapters/`);
         const chaptersData = await resChapters.json();
 
         // For each chapter, fetch its lessons
         const chaptersWithLessons = await Promise.all(
           chaptersData.map(async (chapter: Chapter) => {
-            const resLessons = await fetch(`http://localhost:8000/chapters/${chapter.id}/lessons/`);
+            const resLessons = await fetch(`${API_BASE_URL}/chapters/${chapter.id}/lessons/`);
             const lessons: Lesson[] = await resLessons.json();
             return { ...chapter, lessons };
           })

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../api';
 import { useNavigate } from 'react-router-dom';
 import type { Course } from '../types/course';
 
@@ -16,7 +17,7 @@ const LandingPage: React.FC = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch('http://localhost:8000/courses/');
+        const res = await fetch(`${API_BASE_URL}/courses/`);
         if (!res.ok) throw new Error('Failed to fetch courses');
         const data: Course[] = await res.json();
         setCourses(data);

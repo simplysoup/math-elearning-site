@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { API_BASE_URL } from '../api';
 import { useParams, useNavigate } from "react-router-dom";
 import { Course, Chapter, Lesson, LessonContent } from '../types/course';
 import { LessonHeader } from '../components/lesson/LessonHeader';
@@ -46,13 +47,13 @@ const LessonPage = () => {
         if (!courseId || !chapterId || !lessonId) throw new Error("Missing URL parameters");
 
         // Fetch course
-        const resCourse = await fetch(`http://localhost:8000/courses/${courseId}`);
+        const resCourse = await fetch(`${API_BASE_URL}/courses/${courseId}`);
         if (!resCourse.ok) throw new Error("Course not found");
         const courseData: Course = await resCourse.json();
         setCourse(courseData);
 
         // Fetch chapters
-        const resChapters = await fetch(`http://localhost:8000/courses/${courseId}/chapters/`);
+        const resChapters = await fetch(`${API_BASE_URL}/courses/${courseId}/chapters/`);
         if (!resChapters.ok) throw new Error("Chapters not found");
         const chapters: Chapter[] = await resChapters.json();
         const currentChapter = chapters.find(ch => ch.id.toString() === chapterId);
@@ -60,14 +61,14 @@ const LessonPage = () => {
         setChapter(currentChapter);
 
         // Fetch lessons
-        const resLessons = await fetch(`http://localhost:8000/chapters/${chapterId}/lessons/`);
+        const resLessons = await fetch(`${API_BASE_URL}/chapters/${chapterId}/lessons/`);
         if (!resLessons.ok) throw new Error("Lessons not found");
         const lessons: Lesson[] = await resLessons.json();
         const currentLesson = lessons.find(lsn => lsn.id.toString() === lessonId);
         if (!currentLesson) throw new Error("Lesson not found");
 
         // Fetch lesson content
-        const resContent = await fetch(`http://localhost:8000/lessons/${lessonId}/content/`);
+        const resContent = await fetch(`${API_BASE_URL}/lessons/${lessonId}/content/`);
         if (!resContent.ok) throw new Error("Lesson content not found");
         const contents: LessonContent[] = await resContent.json();
 
