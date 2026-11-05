@@ -1,1 +1,0 @@
-{"engines":{"node":">=18"},"name":"math-elearning-site","private":true,"scripts":{"build":"npm run build --prefix web","dev":"npm run dev --prefix web","preview":"npm run preview --prefix web"},"type":"module","version":"0.0.0"}
