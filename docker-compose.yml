@@ -1,11 +1,10 @@
 # Deployment note: create a .env at the repo root before the first run:
 #   POSTGRES_PASSWORD=<a strong password>
 #   SECRET_KEY=<a long random string>
-# The API port (8000) is published for testing only, so the Vercel
-# frontend can reach it over plain HTTP. For a real deployment, remove
-# this mapping and put the API behind a TLS reverse proxy instead.
-# The database is internal only; the web container is reached through
-# nginx's same-origin /api proxy when served from this host.
+# The whole site is served from this host on an uncommon port (18765)
+# to stay clear of the ports other services use here. The API and the
+# database are internal only; the browser reaches the API through
+# nginx's same-origin /api proxy, so nothing but the web port is public.
 services:
   db:
     build: ./db
@@ -18,8 +17,6 @@ services:
 
   api:
     build: ./api
-    ports:
-      - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://learn:${POSTGRES_PASSWORD}@db:5432/learn
       - SECRET_KEY=${SECRET_KEY:?SECRET_KEY is not set}
@@ -34,7 +31,7 @@ services:
     build:
       context: ./web
     ports:
-      - "3000:3000"
+      - "18765:3000"
     depends_on:
       - api
 
