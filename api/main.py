@@ -2,9 +2,10 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 from database import engine, get_db
-from models import Base, Course, Chapter, Lesson, LessonContent, MarkdownContent, Question, QuestionOption, ShortAnswerQuestion
+from models import Base, Course, Chapter, Lesson, LessonContent, MarkdownContent, Question, QuestionOption, ShortAnswerQuestion, User
 from schemas import LessonContentOut, UserCreate, UserLogin
-from auth import register_user, login_user
+from auth import register_user, login_user, get_current_user
+from utils import verify_email_token
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
@@ -27,7 +28,20 @@ app.add_middleware(
 
 @app.post("/register")
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    return register_user(user_data, db)
+    user = register_user(user_data, db)
+    return {"id": user.id, "email": user.email, "username": user.username}
+
+@app.get("/user")
+def get_user(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "username": current_user.username,
+        "first_name": current_user.first_name,
+        "last_name": current_user.last_name,
+        "bio": current_user.bio,
+        "avatar_url": current_user.avatar_url,
+    }
 
 @app.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
@@ -96,11 +110,29 @@ def get_lessons(chapter_id: int, db: Session = Depends(get_db)):
 # --- Content Endpoints ---
 @app.post("/lessons/{lesson_id}/content/")
 def add_content(lesson_id: int, text: str, db: Session = Depends(get_db)):
-    content = Content(text=text, lesson_id=lesson_id)
+    # LessonContent is the join row; the text itself lives in MarkdownContent.
+    last = (
+        db.query(LessonContent)
+        .filter(LessonContent.lesson_id == lesson_id)
+        .order_by(LessonContent.sort_order.desc())
+        .first()
+    )
+    content = LessonContent(
+        lesson_id=lesson_id,
+        content_type="markdown",
+        sort_order=(last.sort_order + 1) if last else 1,
+    )
     db.add(content)
     db.commit()
     db.refresh(content)
-    return content
+    db.add(MarkdownContent(content_id=content.id, text=text, format="markdown"))
+    db.commit()
+    return {
+        "id": content.id,
+        "lesson_id": content.lesson_id,
+        "content_type": content.content_type,
+        "sort_order": content.sort_order,
+    }
 
 @app.get("/lessons/{lesson_id}/content/", response_model=list[LessonContentOut])
 def get_lesson_content(lesson_id: int, db: Session = Depends(get_db)):

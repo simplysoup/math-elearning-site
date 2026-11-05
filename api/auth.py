@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from models import User
 from schemas import UserCreate, UserLogin
 from database import get_db  # your SessionLocal dependency
-from jose import jwt
+from jose import JWTError, jwt
 import os
 from datetime import datetime, timedelta
 from passwords import hash_password, verify_password  # from section 1
