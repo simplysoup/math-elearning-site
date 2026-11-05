@@ -6,7 +6,7 @@
 -- on re-run because the types already existed.
 
 -- Create ENUM types
-CREATE TYPE content_type AS ENUM ('markdown', 'question', 'video');
+CREATE TYPE content_type AS ENUM ('markdown', 'question', 'video', 'visualization');
 CREATE TYPE question_format AS ENUM ('multiple_choice', 'short_answer');
 CREATE TYPE auth_provider AS ENUM ('email', 'google', 'github', 'apple', 'microsoft');
 
@@ -138,6 +138,15 @@ CREATE TABLE markdown_contents (
     format VARCHAR(20) NOT NULL
 );
 
+-- Visualization Contents table: one JSON config per block, rendered by
+-- the frontend (engine 'custom' = the built-in SVG renderers; other
+-- engines are named here so a future renderer can claim them).
+CREATE TABLE visualization_contents (
+    content_id INTEGER PRIMARY KEY REFERENCES lesson_contents(id) ON DELETE CASCADE,
+    engine VARCHAR(20) NOT NULL DEFAULT 'custom',
+    config JSONB NOT NULL DEFAULT '{}'::jsonb
+);
+
 -- Questions table
 CREATE TABLE questions (
     content_id INTEGER PRIMARY KEY REFERENCES lesson_contents(id) ON DELETE CASCADE,
@@ -188,9 +197,20 @@ INSERT INTO markdown_contents (content_id, text, format)
 SELECT id, 'In algebra, variables (like $x$ or $y$) represent unknown values...', 'latex'
 FROM content;
 
+-- Interactive visualization, between the intro and the question: move
+-- the sliders and watch ax + bx add up to (a + b)x, then answer the
+-- question that follows with the same numbers.
 WITH content AS (
   INSERT INTO lesson_contents (lesson_id, content_type, sort_order)
-  VALUES (1, 'question', 2) RETURNING id
+  VALUES (1, 'visualization', 2) RETURNING id
+)
+INSERT INTO visualization_contents (content_id, engine, config)
+SELECT id, 'custom', '{"kind": "linear-combine", "title": "Combine like terms: ax + bx", "prompt": "Move the sliders. What happens to 3x + 2x as x changes — and what single term is it equal to?", "a": 3, "b": 2, "x": 4, "a_min": 1, "a_max": 5, "b_min": 1, "b_max": 5, "x_min": 0, "x_max": 10}'::jsonb
+FROM content;
+
+WITH content AS (
+  INSERT INTO lesson_contents (lesson_id, content_type, sort_order)
+  VALUES (1, 'question', 3) RETURNING id
 ),
 q AS (
   INSERT INTO questions (content_id, question_format, question_text, explanation)
