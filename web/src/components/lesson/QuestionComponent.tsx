@@ -35,7 +35,7 @@ export const QuestionComponent = ({
     const renderOptions = () => {
         if (!content.data.options || content.data.options.length === 0) {
             return (
-                <div className="text-yellow-600 bg-yellow-50 p-2 rounded">
+                <div className="text-pencil bg-mark/40 p-2 rounded-sm">
                     No options available for this question
                 </div>
             );
@@ -52,11 +52,11 @@ export const QuestionComponent = ({
                     return (
                         <button
                             key={optionIndex}
-                            className={`p-4 border rounded-lg text-center transition-all
-                                ${showAsCorrect ? 'bg-green-100 border-green-300' : ''}
-                                ${isIncorrectAttempt ? 'bg-gray-100 border-gray-300 text-gray-400' : ''}
-                                ${isSelected && !isChecking ? 'bg-blue-100 border-blue-300' : ''}
-                                ${!isSelected && !isChecking ? 'hover:bg-gray-50' : ''}`}
+                            className={`p-4 border rounded-sm text-center transition-colors
+                                ${showAsCorrect ? 'bg-mark border-ink' : ''}
+                                ${isIncorrectAttempt ? 'bg-gray-100 border-rule text-stone-400' : ''}
+                                ${isSelected && !isChecking ? 'bg-mark border-ink' : ''}
+                                ${!isSelected && !isChecking ? 'border-rule hover:border-ink' : ''}`}
                             onClick={() => onAnswerChange?.(optionIndex)}
                         >
                             <MarkdownRender>{option}</MarkdownRender>
@@ -70,18 +70,18 @@ export const QuestionComponent = ({
     const isCorrect = isChecking && !showError && userAnswer === content.data.correct_answer;
 
     return (
-        <div className="space-y-4 p-4 bg-gray-100 rounded">
+        <div className="space-y-4 p-4 border border-rule rounded-sm">
             {/* Question bubble */}
-            <div className="p-4 rounded-lg">
+            <div className="p-2">
                 <MarkdownRender>{content.data.question}</MarkdownRender>
             </div>
 
             {/* Answer options */}
             {content.data.format === 'multiple_choice' && renderOptions()}
-            
+
             {content.data.format === 'short_answer' && (
                 <textarea
-                    className={`w-full p-2 border rounded mt-2 ${isChecking ? 'bg-gray-50' : ''}`}
+                    className={`w-full p-2 border border-rule rounded-sm mt-2 focus:outline-none focus:ring-2 focus:ring-pencil ${isChecking ? 'bg-gray-50' : ''}`}
                     value={userAnswer?.toString() || ''}
                     onChange={(e) => onAnswerChange?.(e.target.value)}
                     placeholder="Type your answer here..."
@@ -93,7 +93,7 @@ export const QuestionComponent = ({
             {!isChecking && isCurrent && (
                 <button
                     onClick={onCheckAnswer}
-                    className="px-4 py-2 bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 border-b-4 border-gray-700 rounded-full"
+                    className="px-4 py-2 bg-ink hover:bg-pencil text-white font-medium rounded-sm transition-colors disabled:opacity-50"
                     disabled={userAnswer === null || userAnswer === undefined}
                 >
                     Check Answer
@@ -102,12 +102,12 @@ export const QuestionComponent = ({
 
             {/* Correct answer feedback */}
             {isCorrect && (
-                <div className="bg-green-100 p-4 rounded-lg border border-green-200">
+                <div className="bg-mark/60 p-4 rounded-sm border border-ink">
                     <div className="flex justify-between items-center">
-                        <span className="font-bold text-green-800">Correct!</span>
-                        <button 
+                        <span className="font-bold">Correct.</span>
+                        <button
                             onClick={onShowExplanation}
-                            className="text-blue-600 hover:text-blue-800"
+                            className="text-pencil hover:underline"
                         >
                             Why?
                         </button>
@@ -117,18 +117,18 @@ export const QuestionComponent = ({
 
             {/* Incorrect answer feedback */}
             {isChecking && showError && (
-                <div className="bg-yellow-100 p-4 rounded-lg border border-yellow-200">
+                <div className="bg-gray-50 p-4 rounded-sm border border-rule">
                     <MarkdownRender>{"That's incorrect. Try again."}</MarkdownRender>
                     <div className="flex space-x-3 mt-3">
                         <button
                             onClick={() => onAnswerChange?.(content.data.correct_answer)}
-                            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                            className="px-4 py-2 bg-white border border-rule rounded-sm hover:border-ink"
                         >
                             Show Answer
                         </button>
                         <button
                             onClick={onTryAgain}
-                            className="px-4 py-2 bg-blue-200 text-blue-800 rounded hover:bg-blue-300"
+                            className="px-4 py-2 bg-ink text-white rounded-sm hover:bg-pencil"
                         >
                             Try Again
                         </button>
@@ -138,7 +138,7 @@ export const QuestionComponent = ({
 
             {/* Explanation - shown after clicking Why? */}
             {(showExplanation || !isCurrent ) && (
-                <div className="bg-gray-200 p-4 rounded-lg">
+                <div className="bg-gray-50 p-4 rounded-sm border border-rule">
                     <p><b>Explanation:</b></p>
                     <MarkdownRender>{content.data.explanation || "No explanation available."}</MarkdownRender>
                 </div>
@@ -148,7 +148,7 @@ export const QuestionComponent = ({
             {isCorrect && (
                 <button
                     onClick={isFinalQuestion ? onCompleteLesson : onContinue}
-                    className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    className="w-full px-4 py-2 bg-pencil text-white font-medium rounded-sm hover:bg-pencil-dark transition-colors"
                     disabled={!onContinue && !onCompleteLesson}  // Disable if no callbacks
                 >
                     {isFinalQuestion ? 'Complete Lesson' : 'Continue'}

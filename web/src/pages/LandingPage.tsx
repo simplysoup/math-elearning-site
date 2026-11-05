@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../api';
 import { useNavigate } from 'react-router-dom';
-import type { Course } from '../types/course';
+import type { Course, LessonContent } from '../types/course';
+import { VisualizationComponent } from '../components/lesson/VisualizationComponent';
 
 const LandingPage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -10,6 +11,7 @@ const LandingPage: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [tryViz, setTryViz] = useState<LessonContent | null>(null);
 
   const navigate = useNavigate();
 
@@ -29,6 +31,18 @@ const LandingPage: React.FC = () => {
     };
 
     fetchCourses();
+  }, []);
+
+  // The live graph from the first lesson, so the landing page shows
+  // the actual product instead of describing it.
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/lessons/1/content/`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((contents: LessonContent[]) => {
+        const viz = contents.find((c) => c.type === 'visualization');
+        if (viz) setTryViz(viz);
+      })
+      .catch(() => {});
   }, []);
 
   // Get all unique tags
@@ -79,131 +93,135 @@ const LandingPage: React.FC = () => {
   }
 
   return (
-    <div className="font-sans text-gray-800">
-      <section id="courses" className="py-16 px-4 sm:px-8">
-        <h2 className="text-3xl sm:text-4xl font-semibold text-center mb-6">
-          Explore Our Courses
-        </h2>
+    <div className="max-w-6xl mx-auto px-4 py-10">
+      <div className="grid gap-10 lg:grid-cols-5">
+        {/* Left: masthead + course ledger */}
+        <div className="lg:col-span-3">
+          <p className="font-mono text-xs tracking-widest uppercase text-pencil">
+            A math workbook
+          </p>
+          <h1 className="mt-3 text-4xl sm:text-5xl font-bold leading-tight tracking-tight">
+            Algebra you can move.
+          </h1>
+          <p className="mt-4 max-w-xl text-lg leading-relaxed">
+            Each lesson is a page to work through: a short explanation, a
+            graph you can drag around, and a question to answer before you
+            turn the page. No videos to sit through.
+          </p>
 
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <div className="relative">
+          {/* Search */}
+          <div className="mt-8 max-w-xl">
+            <label htmlFor="course-search" className="sr-only">Search courses</label>
             <input
+              id="course-search"
               type="text"
-              placeholder="Search courses..."
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Search courses…"
+              className="w-full px-3 py-2.5 border border-rule rounded-sm bg-paper focus:outline-none focus:ring-2 focus:ring-pencil"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
-            {searchTerm && (
-              <button
-                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                onClick={() => setSearchTerm('')}
-              >
-                ✕
-              </button>
-            )}
           </div>
-        </div>
 
-        {/* Filter Section */}
-        <div className="max-w-6xl mx-auto mb-8">
-          <div className="flex flex-col items-center">
-            <h3 className="text-lg font-medium mb-3">Filter by tags:</h3>
-            <div className="flex flex-wrap justify-center gap-2">
+          {/* Tag filters */}
+          {allTags.length > 0 && (
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <span className="font-mono text-xs tracking-widest uppercase">Filter:</span>
               {allTags.map(tag => (
                 <button
                   key={tag}
-                  className={`px-4 py-2 rounded-full transition-colors ${
+                  aria-pressed={activeFilters.includes(tag)}
+                  className={`px-2.5 py-1 text-xs font-mono rounded-sm border transition-colors ${
                     activeFilters.includes(tag)
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
+                      ? 'bg-ink text-white border-ink'
+                      : 'bg-paper text-ink border-rule hover:border-ink'
                   }`}
                   onClick={() => toggleFilter(tag)}
                 >
-                  {tag.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  {tag}
                 </button>
               ))}
-            </div>
-
-            {activeFilters.length > 0 && (
-              <div className="mt-4 flex items-center">
-                <span className="text-sm text-gray-600 mr-2">
-                  Active filters: {activeFilters.length}
-                </span>
+              {activeFilters.length > 0 && (
                 <button
                   onClick={clearAllFilters}
-                  className="text-sm text-blue-500 hover:underline"
+                  className="text-xs text-pencil hover:underline"
                 >
                   Clear all
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Course ledger */}
+          <div className="mt-8 border-t-2 border-ink">
+            {filteredCourses.length > 0 ? (
+              filteredCourses.map((course, i) => (
+                <button
+                  key={course.id}
+                  onClick={() => handleCourseClick(course.id)}
+                  className="w-full text-left grid grid-cols-[2.5rem_1fr_auto] items-baseline gap-3 py-5 border-b border-rule hover:bg-gray-50 transition-colors"
+                >
+                  <span className="font-mono text-sm text-pencil">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span>
+                    <span className="block font-display text-xl font-semibold leading-snug">
+                      {course.title}
+                    </span>
+                    <span className="mt-1 block text-sm leading-relaxed max-w-lg">
+                      {course.description}
+                    </span>
+                    <span className="mt-2 block font-mono text-xs">
+                      {course.chapters?.length || 0} chapters ·{' '}
+                      {course.chapters?.reduce((sum, ch) => sum + (ch.lessons?.length || 0), 0) || 0} lessons
+                    </span>
+                  </span>
+                  <span className="font-mono text-sm text-pencil whitespace-nowrap">
+                    Open →
+                  </span>
+                </button>
+              ))
+            ) : (
+              <div className="py-12">
+                <p className="text-lg">No courses found matching your criteria.</p>
+                <button
+                  className="mt-3 text-pencil hover:underline"
+                  onClick={clearAllFilters}
+                >
+                  Clear all filters
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Course Grid */}
-        <div className="max-w-6xl mx-auto">
-          {filteredCourses.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredCourses.map(course => (
-                <div
-                  key={course.id}
-                  className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 cursor-pointer"
-                  onClick={() => handleCourseClick(course.id)}
+        {/* Right: try the graph — the real product, not a description */}
+        <div className="lg:col-span-2">
+          <div className="lg:sticky lg:top-20 border border-rule rounded-sm p-5">
+            <p className="font-mono text-xs tracking-widest uppercase text-pencil">
+              Try it — no account needed
+            </p>
+            <h2 className="mt-2 text-2xl font-bold leading-tight">
+              Move the sliders. The lines move.
+            </h2>
+            {tryViz ? (
+              <div className="mt-4">
+                <VisualizationComponent content={tryViz as Extract<LessonContent, { type: 'visualization' }>} />
+                <button
+                  onClick={() => navigate('/courses/1/chapters/1/lessons/1')}
+                  className="mt-4 inline-block bg-pencil hover:bg-pencil-dark text-white text-sm font-medium px-4 py-2 rounded-sm transition-colors"
                 >
-                  {course.image && (
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      className="w-full h-48 object-cover rounded-t-lg mb-4"
-                    />
-                  )}
-                  <h3 className="text-xl sm:text-2xl font-semibold mb-4">
-                    {course.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    {course.description}
-                  </p>
-
-                  <div className="flex gap-4 text-sm text-gray-500 mb-4">
-                    <span>{course.chapters?.length || 0} Chapters</span>
-                    <span>•</span>
-                    <span>
-                      {course.chapters?.reduce((sum, ch) => sum + (ch.lessons?.length || 0), 0) || 0} Lessons
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {course.tags?.map(tag => (
-                      <span
-                        key={tag}
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          activeFilters.includes(tag)
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        {tag.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-xl text-gray-500">No courses found matching your criteria.</p>
-              <button
-                className="mt-4 text-blue-500 hover:underline"
-                onClick={clearAllFilters}
-              >
-                Clear all filters
-              </button>
-            </div>
-          )}
+                  Work through the full lesson →
+                </button>
+              </div>
+            ) : (
+              <p className="mt-4 text-sm">
+                The first lesson opens with an interactive graph: slide x and
+                watch 3x + 2x become 5x.
+              </p>
+            )}
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

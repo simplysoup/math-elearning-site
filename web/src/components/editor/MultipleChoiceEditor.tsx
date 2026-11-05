@@ -59,7 +59,7 @@ const MultipleChoiceEditor = ({
           question: e.target.value
         }))}
         placeholder="Enter the question"
-        className="w-full p-2 border border-gray-300 rounded-md"
+        className="w-full p-2 border border-rule rounded-sm"
       />
 
       <div className="space-y-2">
@@ -73,14 +73,14 @@ const MultipleChoiceEditor = ({
                 ...prev,
                 correctAnswer: index
               }))}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 text-pencil focus:ring-pencil"
             />
             <input
               type="text"
               value={option}
               onChange={(e) => handleOptionChange(index, e.target.value)}
               placeholder={`Option ${index + 1}`}
-              className="flex-grow p-2 border border-gray-300 rounded-md"
+              className="flex-grow p-2 border border-rule rounded-sm"
             />
             {localState.options.length > 2 && (
               <button 
@@ -97,7 +97,7 @@ const MultipleChoiceEditor = ({
       <button
         onClick={addOption}
         disabled={localState.options.length >= 6}
-        className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 text-sm disabled:opacity-50"
+        className="px-3 py-1 bg-paper hover:bg-gray-100 rounded-sm border border-rule text-sm disabled:opacity-50"
       >
         + Add Option (Max: 6)
       </button>
@@ -110,7 +110,7 @@ const MultipleChoiceEditor = ({
           explanation: e.target.value
         }))}
         placeholder="Explanation (shown after answering, optional)"
-        className="w-full p-2 border border-gray-300 rounded-md"
+        className="w-full p-2 border border-rule rounded-sm"
       />
     </div>
   );

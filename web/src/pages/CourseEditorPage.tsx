@@ -118,25 +118,25 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
       <div className="flex flex-wrap gap-3 mb-6 pb-4 border-b border-gray-200">
         <button
           onClick={() => addBlock('markdown')}
-          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 text-sm font-medium"
+          className="px-4 py-2 bg-paper hover:bg-gray-100 rounded-sm border border-rule text-sm font-medium"
         >
           + Markdown
         </button>
         <button
           onClick={() => addBlock('multiple_choice')}
-          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 text-sm font-medium"
+          className="px-4 py-2 bg-paper hover:bg-gray-100 rounded-sm border border-rule text-sm font-medium"
         >
           + Multiple Choice
         </button>
         <button
           onClick={() => addBlock('short_answer')}
-          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 text-sm font-medium"
+          className="px-4 py-2 bg-paper hover:bg-gray-100 rounded-sm border border-rule text-sm font-medium"
         >
           + Short Answer
         </button>
         <button
           onClick={() => addBlock('code')}
-          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 text-sm font-medium"
+          className="px-4 py-2 bg-paper hover:bg-gray-100 rounded-sm border border-rule text-sm font-medium"
         >
           + Code Block
         </button>
@@ -144,7 +144,7 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
         <div className="flex-grow"></div>
 
         {saveStatus === 'saved' && !isDirty && (
-          <span className="self-center text-sm text-green-700">Saved.</span>
+          <span className="self-center text-sm text-pencil">Saved.</span>
         )}
         {saveStatus === 'error' && (
           <span className="self-center text-sm text-red-600">{saveError || 'Save failed.'}</span>
@@ -152,7 +152,7 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
         <button
           onClick={handleSave}
           disabled={saveStatus === 'saving'}
-          className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white text-sm font-medium disabled:opacity-50"
+          className="px-4 py-2 bg-pencil hover:bg-pencil-dark rounded-sm text-white text-sm font-medium disabled:opacity-50"
         >
           {saveStatus === 'saving' ? 'Saving…' : 'Save Course'}
         </button>
@@ -160,17 +160,17 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
 
       <div className="space-y-4">
         {blocks.length === 0 && (
-          <div className="text-center p-10 bg-gray-50 rounded-lg text-gray-500">
+          <div className="text-center p-10 border border-rule rounded-sm">
             <p>No content yet. Add your first block to get started!</p>
           </div>
         )}
 
         {blocks.map((block, index) => (
-          <div key={block.id} className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+          <div key={block.id} className="border border-rule rounded-sm p-4 bg-paper">
             {block.type === 'visualization' ? (
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded">
+                  <span className="px-2 py-1 text-xs font-medium bg-mark text-ink rounded-sm">
                     Interactive visualization
                   </span>
                   <span className="text-sm text-gray-500">
@@ -184,7 +184,7 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
                 </p>
                 <button
                   onClick={() => deleteBlock(block.id)}
-                  className="mt-2 px-2 py-1 bg-red-100 hover:bg-red-200 rounded-md border border-red-300 text-red-700 text-sm"
+                  className="mt-2 px-2 py-1 bg-red-50 hover:bg-red-100 rounded-sm border border-rule text-pencil text-sm"
                 >
                   Remove visualization
                 </button>
@@ -200,7 +200,7 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
                         b.id === block.id ? { ...b, type: newType, data: getDefaultBlockData(newType) } : b
                       ));
                     }}
-                    className="px-3 py-1 text-sm border border-gray-300 rounded-md"
+                    className="px-3 py-1 text-sm border border-rule rounded-sm bg-paper"
                   >
                     <option value="markdown">Markdown</option>
                     <option value="multiple_choice">Multiple Choice</option>
@@ -211,20 +211,20 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
                   <button
                     onClick={() => moveBlock(block.id, 'up')}
                     disabled={index === 0}
-                    className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 disabled:opacity-50"
+                    className="px-2 py-1 bg-paper hover:bg-gray-100 rounded-sm border border-rule disabled:opacity-50"
                   >
                     ↑
                   </button>
                   <button
                     onClick={() => moveBlock(block.id, 'down')}
                     disabled={index === blocks.length - 1}
-                    className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 disabled:opacity-50"
+                    className="px-2 py-1 bg-paper hover:bg-gray-100 rounded-sm border border-rule disabled:opacity-50"
                   >
                     ↓
                   </button>
                   <button
                     onClick={() => deleteBlock(block.id)}
-                    className="px-2 py-1 bg-red-100 hover:bg-red-200 rounded-md border border-red-300 text-red-700"
+                    className="px-2 py-1 bg-red-50 hover:bg-red-100 rounded-sm border border-rule text-pencil"
                   >
                     ×
                   </button>

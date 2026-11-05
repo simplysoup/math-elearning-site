@@ -11,7 +11,7 @@ export const LessonHeader = ({ course, chapter, lesson }: { course: Course; chap
                     <li className="inline-flex items-center">
                         <button 
                             onClick={() => navigate(`/courses/${course.id}`)} 
-                            className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
+                            className="inline-flex items-center text-sm font-medium text-ink hover:text-pencil"
                         >
                             {course.title}
                         </button>
@@ -39,7 +39,7 @@ export const LessonHeader = ({ course, chapter, lesson }: { course: Course; chap
                 </ol>
             </nav>
 
-            <h1 className="text-3xl font-bold mb-2">{lesson.title}</h1>
+            <h1 className="font-display text-3xl font-bold tracking-tight mb-2">{lesson.title}</h1>
         </div>
     );
 };

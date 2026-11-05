@@ -188,8 +188,11 @@ const LessonPage = () => {
   if (!course || !chapter || !lesson) return <div className="p-6">Lesson not found</div>;
 
   return (
-    <div className="p-6 max-w-xl mx-auto pt-8">
+    <div className="px-4 py-8 max-w-2xl mx-auto">
       <ProgressBar progress={progress} isComplete={isComplete} />
+      <p className="font-mono text-xs tracking-widest uppercase text-pencil">
+        Step {Math.min(currentIndex + 1, lesson.contents.length)} of {lesson.contents.length}
+      </p>
       <LessonHeader course={course} chapter={chapter} lesson={lesson} />
 
       <div className="space-y-8">

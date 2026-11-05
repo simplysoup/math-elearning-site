@@ -38,6 +38,10 @@ const CoursePage = () => {
         );
 
         setCourse({ ...courseData, chapters: chaptersWithLessons });
+        // Open the first chapter by default so the lessons are visible.
+        if (chaptersWithLessons.length > 0) {
+          setExpandedChapters({ [chaptersWithLessons[0].id]: true });
+        }
       } catch (err: any) {
         setError(err.message || "An error occurred");
       } finally {
@@ -63,72 +67,72 @@ const CoursePage = () => {
   if (error) return <div className="p-6 text-red-500">{error}</div>;
   if (!course) return <div className="p-6">Course not found</div>;
 
-  return (
-    <div className="p-6">
-      <div className="flex flex-col md:flex-row gap-6 mb-8">
-        <div className="md:w-1/3">
-          <img 
-            src={course.image} 
-            alt={course.title} 
-            className="rounded-lg shadow-md w-full h-auto"
-          />
-        </div>
-        <div className="md:w-2/3">
-          <h1 className="text-3xl font-bold mb-2">{course.title}</h1>
-          <p className="text-gray-600 mb-4">{course.description}</p>
-          <div className="flex gap-2 mb-4">
-            {course.tags?.map((tag, index) => (
-              <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
+  const totalLessons = course.chapters.reduce((sum, ch) => sum + ch.lessons.length, 0);
 
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Syllabus</h2>
-        <div className="space-y-4">
-          {course.chapters.map((chapter) => (
-            <div key={chapter.id} className="border rounded-lg p-4">
-              <div 
-                className="flex justify-between items-center cursor-pointer"
-                onClick={() => toggleChapter(chapter.id)}
-              >
-                <h3 className="text-xl font-medium mb-2">{chapter.title}</h3>
-                <svg 
-                  className={`w-5 h-5 transition-transform ${expandedChapters[chapter.id] ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-              {expandedChapters[chapter.id] && (
-                <>
-                  {chapter.description && (
-                    <p className="text-gray-600 mb-3">{chapter.description}</p>
-                  )}
-                  <div className="space-y-3">
-                    {chapter.lessons.map((lesson) => (
-                      <div 
-                        key={lesson.id} 
-                        className="pl-4 border-l-2 border-blue-200 cursor-pointer hover:bg-blue-50 p-2 rounded"
-                        onClick={() => handleLessonClick(course.id.toString(), chapter.id, lesson.id)}
-                      >
-                        <h4 className="text-lg font-medium">{lesson.title}</h4>
-                        {lesson.description && (
-                          <p className="text-gray-500">{lesson.description}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      <p className="font-mono text-xs tracking-widest uppercase text-pencil">
+        Course · {course.chapters.length} chapters · {totalLessons} lessons
+      </p>
+      <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight">{course.title}</h1>
+      <p className="mt-3 max-w-2xl text-lg leading-relaxed">{course.description}</p>
+      {course.tags && course.tags.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {course.tags.map((tag) => (
+            <span key={tag} className="px-2 py-0.5 font-mono text-xs border border-rule rounded-sm">
+              {tag}
+            </span>
           ))}
         </div>
+      )}
+
+      <h2 className="mt-10 mb-2 font-display text-2xl font-bold">Syllabus</h2>
+      <div className="border-t-2 border-ink">
+        {course.chapters.map((chapter, ci) => (
+          <section key={chapter.id} className="border-b border-rule">
+            <button
+              className="w-full text-left flex items-baseline gap-3 py-4 hover:bg-gray-50 transition-colors"
+              onClick={() => toggleChapter(chapter.id)}
+              aria-expanded={!!expandedChapters[chapter.id]}
+            >
+              <span className="font-mono text-sm text-pencil">
+                {String(ci + 1).padStart(2, '0')}
+              </span>
+              <span className="flex-1 font-display text-xl font-semibold leading-snug">
+                {chapter.title}
+              </span>
+              <span className="font-mono text-xs">
+                {chapter.lessons.length} lessons {expandedChapters[chapter.id] ? '−' : '+'}
+              </span>
+            </button>
+            {expandedChapters[chapter.id] && (
+              <div className="pb-4 pl-10">
+                {chapter.description && (
+                  <p className="text-sm leading-relaxed mb-3">{chapter.description}</p>
+                )}
+                <ol>
+                  {chapter.lessons.map((lesson, li) => (
+                    <li key={lesson.id}>
+                      <button
+                        className="w-full text-left grid grid-cols-[2rem_1fr_auto] items-baseline gap-2 py-2.5 border-t border-rule hover:bg-gray-50 transition-colors"
+                        onClick={() => handleLessonClick(course.id.toString(), chapter.id, lesson.id)}
+                      >
+                        <span className="font-mono text-xs">{ci + 1}.{li + 1}</span>
+                        <span>
+                          <span className="block font-medium leading-snug">{lesson.title}</span>
+                          {lesson.description && (
+                            <span className="block text-sm">{lesson.description}</span>
+                          )}
+                        </span>
+                        <span className="font-mono text-xs text-pencil">Start →</span>
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+          </section>
+        ))}
       </div>
     </div>
   );

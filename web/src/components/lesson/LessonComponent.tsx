@@ -35,7 +35,7 @@ export const LessonComponent = ({
                     {isCurrent && (
                         <button
                             onClick={onContinue}
-                            className="mt-4 bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 border-b-4 border-gray-700 rounded-full"
+                            className="mt-4 bg-ink hover:bg-pencil text-white font-medium py-2 px-4 rounded-sm transition-colors"
                         >
                             Continue
                         </button>
@@ -62,7 +62,7 @@ export const LessonComponent = ({
                     <VisualizationComponent content={content} />
                     {isCurrent && <button
                         onClick={onContinue}
-                        className="mt-4 bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 border-b-4 border-gray-700 rounded-full"
+                        className="mt-4 bg-ink hover:bg-pencil text-white font-medium py-2 px-4 rounded-sm transition-colors"
                     >
                         Continue
                     </button>}
@@ -72,7 +72,7 @@ export const LessonComponent = ({
                     <VideoComponent content={content} />
                     {isCurrent && <button
                         onClick={onContinue}
-                        className="mt-4 bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 border-b-4 border-gray-700 rounded-full"
+                        className="mt-4 bg-ink hover:bg-pencil text-white font-medium py-2 px-4 rounded-sm transition-colors"
                     >
                         Continue
                     </button>}

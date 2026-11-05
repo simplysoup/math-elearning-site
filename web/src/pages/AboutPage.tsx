@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 const AboutPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow p-8">
+    <div className="min-h-screen bg-paper p-8">
+      <div className="max-w-4xl mx-auto bg-paper border border-rule rounded-sm p-8">
         <h1 className="text-4xl font-bold text-center mb-6">About</h1>
         <p className="text-gray-700 leading-relaxed mb-4">
           Place AI Slop Here
@@ -40,12 +40,12 @@ const AboutPage: React.FC = () => {
         <h2 className="text-2xl font-semibold mt-8 mb-4">Get in Touch</h2>
         <p className="text-gray-700 leading-relaxed mb-6">
           I don't have an email
-          <a href="mailto:info@mathelearn.com" className="p-1 text-blue-500 hover:underline">
+          <a href="mailto:info@mathelearn.com" className="p-1 text-pencil hover:underline">
             info@mathelearn.com
           </a>.
         </p>
         <div className="text-center">
-          <Link to="/" className="text-blue-500 hover:underline">
+          <Link to="/" className="text-pencil hover:underline">
             &larr; Back to Home
           </Link>
         </div>

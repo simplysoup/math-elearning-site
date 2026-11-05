@@ -31,7 +31,7 @@ const ShortAnswerEditor = ({
           question: e.target.value
         }))}
         placeholder="Enter the question"
-        className="w-full p-2 border border-gray-300 rounded-md"
+        className="w-full p-2 border border-rule rounded-sm"
       />
       <textarea
         value={localState.answer}
@@ -40,7 +40,7 @@ const ShortAnswerEditor = ({
           answer: e.target.value
         }))}
         placeholder="Enter the correct answer"
-        className="w-full p-2 border border-gray-300 rounded-md min-h-[80px]"
+        className="w-full p-2 border border-rule rounded-sm min-h-[80px]"
       />
       <input
         type="text"
@@ -50,7 +50,7 @@ const ShortAnswerEditor = ({
           explanation: e.target.value
         }))}
         placeholder="Explanation (shown after answering, optional)"
-        className="w-full p-2 border border-gray-300 rounded-md"
+        className="w-full p-2 border border-rule rounded-sm"
       />
     </div>
   );

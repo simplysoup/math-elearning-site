@@ -1,2 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 @import "tailwindcss";
 @import 'katex/dist/katex.min.css';
+
+/*
+ * Design identity: a printed math workbook, not a SaaS landing page.
+ *
+ * Deliberate choices, specific to this project:
+ * - Ink on plain white paper. The workbook is the reference: ruled
+ *   pages, a teacher's red pen, a highlighter. No cream page, no
+ *   sage, no indigo — the defaults this site used to wear.
+ * - Pencil red (#b3352b) is the one accent: red-pen marks, primary
+ *   actions, links. Highlighter yellow (#fde68a) marks the current
+ *   step and correct answers. Hairline rules instead of shadow cards.
+ * - Type: Space Grotesk for headings (geometric, technical — it
+ *   suits graphs), IBM Plex Sans for body, IBM Plex Mono for
+ *   numbers, labels, and code.
+ * - Radius is 2px on controls, square everywhere else. No pills,
+ *   no decorative motion.
+ */
+@theme {
+  --font-display: "Space Grotesk", "Arial Narrow", sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-ink: #22252a;
+  --color-pencil: #b3352b;
+  --color-pencil-dark: #8f2a22;
+  --color-rule: #e4e1db;
+  --color-mark: #fde68a;
+  --color-paper: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+
+  ::selection {
+    background: var(--color-mark);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pencil);
+    outline-offset: 2px;
+  }
+}

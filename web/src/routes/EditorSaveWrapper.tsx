@@ -231,7 +231,7 @@ const EditorSaveWrapper = () => {
           <select
             value={picker.courseId ?? ''}
             onChange={(e) => selectCourse(e.target.value ? Number(e.target.value) : null)}
-            className="mt-1 px-3 py-2 border border-gray-300 rounded-md bg-white min-w-52"
+            className="mt-1 px-3 py-2 border border-rule rounded-sm bg-paper min-w-52"
           >
             <option value="">Select a course…</option>
             {picker.courses.map((c) => (
@@ -246,7 +246,7 @@ const EditorSaveWrapper = () => {
             value={picker.chapterId ?? ''}
             onChange={(e) => selectChapter(e.target.value ? Number(e.target.value) : null)}
             disabled={!picker.courseId}
-            className="mt-1 px-3 py-2 border border-gray-300 rounded-md bg-white min-w-52 disabled:opacity-50"
+            className="mt-1 px-3 py-2 border border-rule rounded-sm bg-paper min-w-52 disabled:opacity-50"
           >
             <option value="">Select a chapter…</option>
             {picker.chapters.map((ch) => (
@@ -261,7 +261,7 @@ const EditorSaveWrapper = () => {
             value={picker.lessonId ?? ''}
             onChange={(e) => selectLesson(e.target.value ? Number(e.target.value) : null)}
             disabled={!picker.chapterId}
-            className="mt-1 px-3 py-2 border border-gray-300 rounded-md bg-white min-w-52 disabled:opacity-50"
+            className="mt-1 px-3 py-2 border border-rule rounded-sm bg-paper min-w-52 disabled:opacity-50"
           >
             <option value="">Select a lesson…</option>
             {picker.lessons.map((l) => (
@@ -278,12 +278,12 @@ const EditorSaveWrapper = () => {
             value={newLessonTitle}
             onChange={(e) => setNewLessonTitle(e.target.value)}
             placeholder="New lesson title"
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="px-3 py-2 border border-rule rounded-sm text-sm"
           />
           <button
             onClick={createLesson}
             disabled={creating || !newLessonTitle.trim()}
-            className="px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md text-sm disabled:opacity-50"
+            className="px-3 py-2 bg-paper hover:bg-gray-100 border border-rule rounded-sm text-sm disabled:opacity-50"
           >
             + New lesson in this chapter
           </button>
@@ -297,12 +297,12 @@ const EditorSaveWrapper = () => {
             value={newChapterTitle}
             onChange={(e) => setNewChapterTitle(e.target.value)}
             placeholder="New chapter title"
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="px-3 py-2 border border-rule rounded-sm text-sm"
           />
           <button
             onClick={createChapter}
             disabled={creating || !newChapterTitle.trim()}
-            className="px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md text-sm disabled:opacity-50"
+            className="px-3 py-2 bg-paper hover:bg-gray-100 border border-rule rounded-sm text-sm disabled:opacity-50"
           >
             + New chapter in this course
           </button>
@@ -315,19 +315,19 @@ const EditorSaveWrapper = () => {
           value={newCourseTitle}
           onChange={(e) => setNewCourseTitle(e.target.value)}
           placeholder="New course title"
-          className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+          className="px-3 py-2 border border-rule rounded-sm text-sm"
         />
         <input
           type="text"
           value={newCourseDescription}
           onChange={(e) => setNewCourseDescription(e.target.value)}
           placeholder="Description (optional)"
-          className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+          className="px-3 py-2 border border-rule rounded-sm text-sm"
         />
         <button
           onClick={createCourse}
           disabled={creating || !newCourseTitle.trim()}
-          className="px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md text-sm disabled:opacity-50"
+          className="px-3 py-2 bg-paper hover:bg-gray-100 border border-rule rounded-sm text-sm disabled:opacity-50"
         >
           + New course
         </button>
@@ -345,7 +345,7 @@ const EditorSaveWrapper = () => {
       )}
 
       {!loadingLesson && picker.lessonId === null && (
-        <div className="mx-6 my-4 p-10 bg-gray-50 rounded-lg text-center text-gray-500">
+        <div className="mx-6 my-4 p-10 border border-rule rounded-sm text-center">
           Select a lesson above, or create a new one, to start editing.
         </div>
       )}

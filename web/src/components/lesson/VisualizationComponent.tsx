@@ -49,7 +49,7 @@ export const VisualizationComponent = ({
 
     if (content.data.engine !== "custom" || !config || config.kind !== "linear-combine") {
         return (
-            <div className="bg-gray-100 p-4 rounded-lg">
+            <div className="border border-rule p-4 rounded-sm">
                 <div className="text-lg font-medium mb-2">Interactive Visualization</div>
                 <div className="text-gray-500">
                     This visualization kind ({content.data.engine}) is not supported yet.
@@ -75,7 +75,7 @@ export const VisualizationComponent = ({
 
             <svg
                 viewBox={`0 0 ${W} ${H}`}
-                className="w-full bg-white border border-gray-200 rounded-lg"
+                className="w-full bg-white border border-rule rounded-sm"
                 role="img"
                 aria-label={`Graph of y equals ${a}x, y equals ${b}x, and y equals ${total}x, with x equal to ${x}`}
             >

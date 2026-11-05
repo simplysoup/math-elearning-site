@@ -77,18 +77,18 @@ const ProfilePage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pencil"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <div className="max-w-md mx-auto mt-10 p-6 bg-paper rounded-sm border border-rule">
         <div className="text-red-500 mb-4">{error}</div>
         <button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+          className="px-4 py-2 bg-pencil text-white rounded-sm hover:bg-pencil-dark"
         >
           Retry
         </button>
@@ -97,7 +97,7 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-2xl mx-auto mt-10 p-6 bg-paper rounded-sm border border-rule">
       <div className="flex items-center space-x-4 mb-6">
         {profile?.avatar_url ? (
           <img
@@ -106,7 +106,7 @@ const ProfilePage: React.FC = () => {
             className="w-20 h-20 rounded-full object-cover"
           />
         ) : (
-          <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-2xl font-bold text-gray-600">
+          <div className="w-20 h-20 rounded-full bg-rule flex items-center justify-center text-2xl font-bold text-ink">
             {profile?.email?.charAt(0).toUpperCase()}
           </div>
         )}
@@ -157,7 +157,7 @@ const ProfilePage: React.FC = () => {
             {courses.map((course) => (
               <div
                 key={course.course_id}
-                className="border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50"
+                className="border border-rule rounded-sm p-4 cursor-pointer hover:bg-gray-50"
                 onClick={() => navigate(`/courses/${course.course_id}`)}
               >
                 <div className="flex justify-between items-baseline gap-4">
@@ -166,9 +166,9 @@ const ProfilePage: React.FC = () => {
                     {course.completed_lessons}/{course.total_lessons} lessons · {course.progress}%
                   </span>
                 </div>
-                <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="mt-2 h-2 bg-rule overflow-hidden">
                   <div
-                    className="h-full bg-indigo-600 rounded-full"
+                    className="h-full bg-pencil"
                     style={{ width: `${course.progress}%` }}
                   />
                 </div>
@@ -186,7 +186,7 @@ const ProfilePage: React.FC = () => {
       <div className="mt-8 flex space-x-4">
         <button
           onClick={() => navigate('/edit-profile')}
-          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+          className="px-4 py-2 bg-pencil text-white rounded-sm hover:bg-pencil-dark"
         >
           Edit Profile
         </button>

@@ -10,7 +10,7 @@ const CodeEditor = ({
       <select
         value={language}
         onChange={(e) => onChange({ code, language: e.target.value })}
-        className="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white"
+        className="px-3 py-1 text-sm border border-rule rounded-sm bg-paper"
       >
         <option value="javascript">JavaScript</option>
         <option value="python">Python</option>
@@ -22,7 +22,7 @@ const CodeEditor = ({
         value={code}
         onChange={(e) => onChange({ code: e.target.value, language })}
         placeholder={`Enter your ${language} code`}
-        className="w-full p-3 border border-gray-300 rounded-md min-h-[120px] font-mono text-sm bg-gray-50"
+        className="w-full p-3 border border-rule rounded-sm min-h-[120px] font-mono text-sm bg-gray-50"
       />
     </div>
   );
