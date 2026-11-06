@@ -161,7 +161,10 @@
 
       draw();
       redraws.push(draw);
-      return svg;
+      // Hand back the svg and the coordinate transforms, so teacher
+      // code can draw extra elements (tangent lines, rectangles,
+      // points) in the same coordinates as the plot.
+      return { svg: svg, toPx: toPx, toPy: toPy };
     },
   };
 

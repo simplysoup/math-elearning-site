@@ -79,7 +79,9 @@ opaque origin and cannot reach the parent page, the user's session, or
 the site's API. The code runs in the student's browser against a small
 viz API: viz.slider(label, min, max, start, step), viz.plot(f, { xMin,
 xMax, yMin, yMax }), viz.text(s), viz.clear(). Plots redraw when a
-slider moves. Code must be non-empty and at most 50,000 characters.
+slider moves. viz.plot returns { svg, toPx, toPy }, so teacher code
+can draw extra elements (tangent lines, rectangles, points) in the
+same coordinates as the plot. Code must be non-empty and at most 50,000 characters.
 The original built-in combine-like-terms graph is still supported and
 is kept as-is by the editor; it is not editable there.
 
