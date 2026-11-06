@@ -139,3 +139,14 @@ All Khan Academy unless noted.
   deleted when Calculus 1 went live, so there is no live course
   carrying it. Screenshots of the new visualizations:
   viz-check/viz-shot-lesson-{1,3,5,7,11}.png.
+- Lesson 1 skill trial (2026-11-06): the interactive-math-viz
+  skill was applied to lesson 1 as a test. The checklist found
+  two gaps: no prediction before the slider moved, and the
+  two-sided approach was compared from memory (one dot). Fixed:
+  the intro now asks the student to guess before touching the
+  slider, and the viz draws a mirror dot the same distance from
+  1 on the other side, so both values are on screen at once
+  (readout shows both, e.g. x = 0.90 → f(x) = 1.90 · x = 1.10 →
+  f(x) = 2.10). The intro no longer states the limit is 2
+  outright; the student reads it off the viz and the check
+  question confirms it. Re-verified 17/17 (check_calc1.js).
