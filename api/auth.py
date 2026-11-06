@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from models import User
 from schemas import UserCreate, UserLogin
 from database import get_db  # your SessionLocal dependency
@@ -48,15 +49,31 @@ def create_refresh_token(user_id: int) -> str:
 def register_user(user_data: UserCreate, db: Session):
     if db.query(User).filter(User.email == user_data.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
-    
+
+    # The signup form sends the full name as the username, so two people
+    # with the same name would collide on the unique username column.
+    # Keep the name they typed, suffixed until it is unique, instead of
+    # failing the whole registration with a 500.
+    username = user_data.username
+    if username:
+        base = username
+        suffix = 2
+        while db.query(User).filter(User.username == username).first():
+            username = f"{base}-{suffix}"
+            suffix += 1
+
     hashed_pw = hash_password(user_data.password)
     new_user = User(
         email=user_data.email,
-        username=user_data.username,
+        username=username,
         password_hash=hashed_pw
     )
     db.add(new_user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not create that account, please try again")
     db.refresh(new_user)
     return new_user
 

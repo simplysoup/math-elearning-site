@@ -38,6 +38,29 @@ def test_register_login_and_get_user(client):
     assert res.json()["email"] == "test@example.com"
 
 
+def test_register_same_display_name_twice_succeeds(client):
+    # The signup form sends the full name as the username; a second user
+    # with the same name must not fail with a 500 on the unique column.
+    res = client.post(
+        "/register",
+        json={"email": "same1@example.com", "password": "correct horse battery staple", "username": "Same Name"},
+    )
+    assert res.status_code == 200, res.text
+    assert res.json()["username"] == "Same Name"
+    res = client.post(
+        "/register",
+        json={"email": "same2@example.com", "password": "correct horse battery staple", "username": "Same Name"},
+    )
+    assert res.status_code == 200, res.text
+    assert res.json()["username"] == "Same Name-2"
+    # The duplicate email case still rejects cleanly.
+    res = client.post(
+        "/register",
+        json={"email": "same1@example.com", "password": "correct horse battery staple", "username": "Other Name"},
+    )
+    assert res.status_code == 400, res.text
+
+
 def test_invalid_token_is_unauthorized(client):
     res = client.get("/user", headers={"Authorization": "Bearer not-a-token"})
     assert res.status_code == 401
