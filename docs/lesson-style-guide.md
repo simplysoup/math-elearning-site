@@ -215,7 +215,90 @@ visualization, one video, one check question. The adaptation:
 6. (In the question's explanation:) the step that gets the
    answer, in one sentence.
 
-## 8. Before and after
+## 8. The visualization: an experiment, not a picture
+
+The visualization is where the reader tests the idea, not
+where they look at it. The principles below are distilled
+from Craig Barton's interactive tools (see the
+interactive-math-viz skill for the full version, with the
+Barton examples). A visualization that breaks them is a
+picture, and a picture does not teach.
+
+**One variable, one idea.** One viz answers one question,
+with one control. One slider, everything else frozen. The
+slider changes exactly the quantity in the lesson's question.
+If a second slider is needed, it is a second viz. The
+slider's range is chosen so the phenomenon is visible, not
+so the numbers are round: the limit viz runs $x$ from 0 to 2
+because the limit is at 1.
+
+**Predict first, then reveal.** The markdown asks the reader
+to commit before the slider is moved ("Before you touch the
+slider, guess ..."), and the viz is the check. The intro does
+not state the specific numerical answer the check question
+asks for: the viz shows the evidence, the question asks, and
+the question's explanation reveals it. If the intro gives the
+answer away, there is nothing to predict and the viz is a
+demonstration, not an experiment.
+
+**Surface the current values, prominently.** The numbers the
+lesson is about are the largest thing on screen. Use
+`viz.readout` for one (input, output) pair, e.g.
+`x = 0.90 → f(x) = 1.90`, with `viz.text` underneath for
+the sentence that explains what they mean. When there is
+more than one pair to show, use `viz.values` — a small
+table, one row per pair — instead of cramming both pairs
+into one readout line, which wraps mid-value on a narrow
+screen. Never bury the values in a sentence, and never make
+the reader read them off the graph.
+
+**Draw the target on the picture.** Show the value the data
+is approaching as a dashed reference line, so the reader
+sees the gap close: the dashed line at $y = 2$ for the
+limit, the dashed line at the exact area for the Riemann
+sums. Mark the special points: the hole (open circle) where
+the function does not exist, the maximum, the turning
+points, the point being evaluated (filled dot). A point
+without a marker is a number the reader has to guess.
+Label every marker in the markdown or in the note
+underneath the viz.
+
+**Compare, don't remember.** If the lesson is about two
+things — the left and the right of a limit, the secant and
+the tangent — put both on screen at the same time. The
+limit viz draws a mirror dot the same distance from 1 on
+the other side, so both values are visible at once with one
+slider. Never ask the reader to run the viz, remember the
+result, change a setting, run it again, and compare from
+memory.
+
+**Let the edge cases happen.** Dragging the limit slider to
+exactly $x = 1$ makes the dots disappear and the values
+table say "undefined", instead of silently doing something
+else. The viz states its own limits. A slider value that
+produces NaN with no message is a bug, not an edge case.
+
+**The default shows the mechanism.** The first thing the
+reader sees should explain how the viz works. The limit viz
+defaults to $x = 0.9$, close to the limit, not $x = 0.5$.
+Dragging the slider from there is the bulk run that shows
+the pattern.
+
+**How the API works.** Teacher code runs in a sandboxed
+iframe with a small `viz` object: `viz.slider(label, min,
+max, start, step)`; `viz.plot(f, { xMin, xMax, yMin, yMax,
+title })`, which draws the curve with axes, gridlines and
+tick labels and returns `{ svg, toPx, toPy }` so extra
+elements (lines, dots, rectangles) can be drawn in the same
+coordinates; `viz.readout(s)` for one pair of current
+values; `viz.values(rows, headers)` for a table of them;
+`viz.text(s)` for the explanatory line underneath;
+`viz.redraw(f)` to re-add your own elements after a plot
+redraw, because a plot clears its svg on every slider move.
+Register redraw callbacks after the plot calls, and call
+the draw function once at the end for the initial render.
+
+## 9. Before and after
 
 ### Lesson 1 — What is a limit?
 
@@ -230,8 +313,9 @@ the work):
 > like $x + 1$. Move the slider and watch $f(x)$ get closer
 > and closer to 2."
 
-After (problem first, the idea in plain words, the reader does
-something, the trap named):
+After (problem first, the idea in plain words, the reader
+predicts and then checks, the trap named, both sides of the
+limit on screen at once):
 
 > "Here is a function that breaks if you try to use it at one
 > point. Take $f(x) = \frac{x^2 - 1}{x - 1}$ and plug in
@@ -241,15 +325,32 @@ something, the trap named):
 > A limit asks what a function is doing *around* a point, not
 > what it does *at* the point.
 >
-> Try $x = 0.9$ and $x = 1.1$: both give values close to 2.
-> Move the slider and watch $f(x)$ close in on 2 from both
-> sides. The values stay close to 2 no matter how near to 1
-> you get. That is what it means for the limit to be 2.
+> Before you touch the slider, guess. As $x$ gets close to 1,
+> does $f(x)$ settle on a value, or does it blow up? If it
+> settles, what value? Move the slider to 0.9 and check your
+> guess, then drag it across 1 and watch what happens on the
+> other side.
+>
+> The two red dots are the same distance from 1 on either
+> side, so you can see both sides at once. The open circle
+> marks the point where the function doesn't exist, and the
+> dashed line is the value the dots are closing in on. Drag
+> the slider to 1 and the dots disappear — $f(1)$ doesn't
+> exist — but they still close in on the same value from both
+> sides.
 >
 > Notice we never used $x = 1$ itself. We don't need to, and
 > the limit doesn't care about it. That is the one idea to
 > hold on to: a limit is about what happens *around* the
 > point."
+
+The visualization for this lesson draws the dashed limit
+line, the open circle at the hole, and a mirror dot the same
+distance from 1 on the other side, with the current values
+as a table (from the left / from the right, with $x$ and
+$f(x)$ columns). The intro does not state the limit is 2;
+the reader reads it off the viz and the check question
+confirms it.
 
 ### Lesson 7 — Related rates
 
@@ -293,7 +394,7 @@ relates them, differentiate, solve, check the sign):
 > Move the $x$ slider and watch the top come down faster and
 > faster as the foot goes out."
 
-## 9. Checklist for a new lesson
+## 10. Checklist for a new lesson
 
 - [ ] The first sentence is a situation or a question, not a
       definition.
@@ -302,6 +403,20 @@ relates them, differentiate, solve, check the sign):
       is defined in words.
 - [ ] The reader is told what to do with the visualization and
       what to look for.
+- [ ] The markdown asks for a prediction before the slider is
+      moved, and does not state the specific numerical answer
+      the check question asks for.
+- [ ] The visualization has one slider, changing exactly the
+      quantity in the lesson's question, with a default that
+      shows the mechanism.
+- [ ] The current values are shown prominently: `viz.readout`
+      for one pair, `viz.values` as a table for more than one.
+- [ ] A dashed line or marker shows the target value, and
+      every point, line and marker on the picture is named.
+- [ ] If the lesson compares two things, both are on screen at
+      once, not compared from memory.
+- [ ] The slider ends do something honest and stated (the
+      hole shows "undefined", it does not break or lie).
 - [ ] Every algebra step in the text has a sentence saying what
       it is and why.
 - [ ] One trap is named, in its own sentence.
