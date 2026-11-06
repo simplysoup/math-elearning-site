@@ -20,6 +20,13 @@ viz.plot(f, { xMin, xMax, yMin, yMax, title }) — draws y = f(x)
 viz.readout(s) — the current values, rendered large and bold (use
   it for x and f(x), or the slope, or the sum). Put the sentence
   that explains what they mean in viz.text underneath it.
+viz.values(rows, headers) — the current values as a small table,
+  for when there is more than one (input, output) pair to show
+  (e.g. both sides of a limit). rows is an array of arrays of cell
+  strings; the first cell of each row is the label. headers, if
+  given, labels the value columns. It returns { update(rows) },
+  which rebuilds the table — call it from the draw function so
+  the values stay live.
 viz.redraw(f) — run f again whenever a slider moves. A plot clears
   its svg on every redraw, so re-add your own elements here, after
   the plot call, and they will be drawn on top each time.
