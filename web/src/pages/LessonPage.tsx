@@ -38,6 +38,14 @@ const LessonPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [locked, setLocked] = useState(false);
 
+  // Full unit list and this unit's lessons, kept so the completion
+  // screen can offer the next lesson. The completion screen itself.
+  const [allUnits, setAllUnits] = useState<Unit[]>([]);
+  const [unitLessons, setUnitLessons] = useState<Lesson[]>([]);
+  const [completed, setCompleted] = useState(false);
+  const [nextLesson, setNextLesson] = useState<{ unitId: number; lessonId: number; title: string } | null>(null);
+  const [isLastLesson, setIsLastLesson] = useState(false);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswer>({});
   const [showError, setShowError] = useState(false);
@@ -63,6 +71,7 @@ const LessonPage = () => {
         const currentUnit = units.find(u => u.id.toString() === unitId);
         if (!currentUnit) throw new Error("Unit not found");
         setUnit(currentUnit);
+        setAllUnits(units);
 
         // Fetch lessons
         const resLessons = await apiFetch(`/units/${unitId}/lessons/`);
@@ -70,6 +79,7 @@ const LessonPage = () => {
         const lessons: Lesson[] = await resLessons.json();
         const currentLesson = lessons.find(lsn => lsn.id.toString() === lessonId);
         if (!currentLesson) throw new Error("Lesson not found");
+        setUnitLessons(lessons);
 
         // Fetch lesson content. A locked unit returns 403 here.
         const resContent = await apiFetch(`/lessons/${lessonId}/content/`);
@@ -100,6 +110,9 @@ const LessonPage = () => {
     setIsChecking(false);
     setCompletedContents([]);
     setLocked(false);
+    setCompleted(false);
+    setNextLesson(null);
+    setIsLastLesson(false);
   }, [lessonId]);
 
   useEffect(() => {
@@ -169,26 +182,73 @@ const LessonPage = () => {
 
   const isFinalQuestion = currentIndex === lesson.contents.length - 1;
 
-  const handleCompleteLesson = () => {
-    if (isFinalQuestion && !completedContents.some(c => c.index === currentIndex)) {
-      setCompletedContents(prev => [
-        ...prev,
-        {
-          index: currentIndex,
-          content: lesson.contents[currentIndex],
-          userAnswer: userAnswers[currentIndex]
-        }
-      ]);
-    }
+  const handleCompleteLesson = async () => {
+    // Record the final block once, even if this is reached both from
+    // the question's "Complete Lesson" button and from Continuing
+    // past a final reading block.
+    setCompletedContents(prev =>
+      prev.some(c => c.index === currentIndex)
+        ? prev
+        : [...prev, {
+            index: currentIndex,
+            content: lesson.contents[currentIndex],
+            userAnswer: userAnswers[currentIndex]
+          }]
+    );
 
-    // Persist completion for logged-in users (auto-enrolls them in the
-    // course). Anonymous users can still finish the lesson locally;
-    // a failed call here never blocks leaving the lesson.
+    // Persist completion for logged-in users (auto-enrolls them in
+    // the course). Anonymous users can still finish the lesson
+    // locally; a failed call here never blocks leaving the lesson.
     if (isAuthenticated && lessonId) {
-      apiFetch(`/lessons/${lessonId}/complete`, { method: 'POST' }).catch(() => {});
+      try {
+        await apiFetch(`/lessons/${lessonId}/complete`, { method: 'POST' });
+      } catch { /* ignored */ }
     }
 
-    navigate(`/courses/${courseId}`);
+    // Completing this lesson may have unlocked the next unit, so
+    // re-read the units before deciding what "next lesson" means.
+    let freshUnits = allUnits;
+    try {
+      const res = await apiFetch(`/courses/${courseId}/units/`);
+      if (res.ok) {
+        freshUnits = await res.json();
+        setAllUnits(freshUnits);
+      }
+    } catch { /* fall back to the mount-time list */ }
+
+    const idx = unitLessons.findIndex(l => l.id.toString() === lessonId);
+    if (idx >= 0 && idx < unitLessons.length - 1) {
+      const n = unitLessons[idx + 1];
+      setNextLesson({ unitId: Number(unitId), lessonId: n.id, title: n.title });
+      setIsLastLesson(false);
+    } else {
+      const unitIdx = freshUnits.findIndex(u => u.id.toString() === unitId);
+      const nextUnit = freshUnits[unitIdx + 1];
+      if (nextUnit && !nextUnit.locked) {
+        try {
+          const res = await apiFetch(`/units/${nextUnit.id}/lessons/`);
+          if (res.ok) {
+            const ls: Lesson[] = await res.json();
+            if (ls.length > 0) {
+              setNextLesson({ unitId: nextUnit.id, lessonId: ls[0].id, title: ls[0].title });
+              setIsLastLesson(false);
+            } else {
+              setIsLastLesson(true);
+            }
+          } else {
+            setIsLastLesson(true);
+          }
+        } catch {
+          setIsLastLesson(true);
+        }
+      } else {
+        // No next unit, or the next unit is still locked (for
+        // example an anonymous reader finishing unit 1).
+        setIsLastLesson(true);
+      }
+    }
+
+    setCompleted(true);
   };
 
   const progress = lesson.contents.length > 0
@@ -249,7 +309,7 @@ const LessonPage = () => {
           />
         ))}
 
-        {currentIndex < lesson.contents.length && (
+        {!completed && currentIndex < lesson.contents.length && (
           <LessonComponent
             content={lesson.contents[currentIndex]}
             index={currentIndex}
@@ -266,6 +326,35 @@ const LessonPage = () => {
             onCompleteLesson={handleCompleteLesson}
             isFinalQuestion={isFinalQuestion}
           />
+        )}
+
+        {completed && (
+          <div className="border border-rule rounded-sm p-6 text-center">
+            <p className="text-lg font-medium">Lesson complete.</p>
+            <p className="mt-1 text-sm text-stone-600">
+              {nextLesson
+                ? `Next up: ${nextLesson.title}`
+                : isLastLesson
+                  ? 'That was the last lesson in this course.'
+                  : 'Head back to the course to pick your next lesson.'}
+            </p>
+            <div className="mt-4 flex justify-center gap-3">
+              {nextLesson && (
+                <button
+                  onClick={() => navigate(`/courses/${courseId}/units/${nextLesson.unitId}/lessons/${nextLesson.lessonId}`)}
+                  className="px-4 py-2 bg-pencil hover:bg-pencil-dark text-white text-sm font-medium rounded-sm"
+                >
+                  Next lesson →
+                </button>
+              )}
+              <button
+                onClick={() => navigate(`/courses/${courseId}`)}
+                className="px-4 py-2 border border-rule rounded-sm text-sm hover:border-ink"
+              >
+                Back to the course
+              </button>
+            </div>
+          </div>
         )}
 
         <div ref={contentEndRef} />
