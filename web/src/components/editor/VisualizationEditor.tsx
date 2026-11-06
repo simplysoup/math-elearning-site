@@ -12,9 +12,14 @@ It gets a viz object and the frame's document.
 
 viz.slider(label, min, max, start, step) — a slider; read its
   current value as slider.value. Plots redraw when it moves.
-viz.plot(f, { xMin, xMax, yMin, yMax }) — draws y = f(x) with axes.
-  It returns { svg, toPx, toPy }, so you can draw extra elements
-  (tangent lines, rectangles, points) in the same coordinates.
+viz.plot(f, { xMin, xMax, yMin, yMax, title }) — draws y = f(x)
+  with axes and a grid. title, if given, is a heading above the
+  plot. It returns { svg, toPx, toPy }, so you can draw extra
+  elements (tangent lines, rectangles, points) in the same
+  coordinates.
+viz.readout(s) — the current values, rendered large and bold (use
+  it for x and f(x), or the slope, or the sum). Put the sentence
+  that explains what they mean in viz.text underneath it.
 viz.redraw(f) — run f again whenever a slider moves. A plot clears
   its svg on every redraw, so re-add your own elements here, after
   the plot call, and they will be drawn on top each time.

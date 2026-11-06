@@ -9,8 +9,14 @@
   .viz-slider { display: block; margin: 10px 0; font-size: 14px; }
   .viz-slider input { width: 100%; margin-top: 4px; }
   .viz-plot { width: 100%; display: block; }
+  .viz-plot-title { font-size: 14px; font-weight: 600; margin: 10px 0 4px; }
   .viz-error { color: #b3352b; border: 1px solid #b3352b; padding: 10px; font-size: 14px; white-space: pre-wrap; }
   .viz-text { font-size: 14px; margin: 8px 0; }
+  /* The current values: bigger, bolder, and set apart with the
+   * pencil-red rule, so the numbers the lesson is about are the
+   * first thing the eye lands on. viz.text stays the small
+   * explanatory line underneath it. */
+  .viz-readout { font-size: 17px; font-weight: 600; margin: 10px 0; padding: 8px 12px; border-left: 3px solid #b3352b; background: #fafaf9; }
 </style>
 </head>
 <body>
@@ -74,6 +80,18 @@
       return p;
     },
 
+    // The current values of the visualization, rendered prominently
+    // (larger, bolder, pencil-red rule). Use this for the numbers
+    // the lesson is about — x and f(x), h and the slope, n and the
+    // sum — and viz.text for the sentence underneath that explains
+    // what they mean.
+    readout: function (s) {
+      var p = el('p', 'viz-readout', String(s));
+      root.appendChild(p);
+      reportHeight();
+      return p;
+    },
+
     slider: function (label, min, max, value, step) {
       var wrap = el('label', 'viz-slider');
       var name = el('span', null, label + ' = ' + value);
@@ -104,6 +122,13 @@
       var yMin = opts.yMin != null ? opts.yMin : -10;
       var yMax = opts.yMax != null ? opts.yMax : 10;
       var W = 560, H = 340, PL = 46, PB = 30, PT = 14, PR = 14;
+      // Optional title above the plot, e.g. { title: 'f(x) = x³' }.
+      // Useful when a visualization has two plots and the reader
+      // needs to know which is which.
+      if (opts.title) {
+        var titleEl = el('p', 'viz-plot-title', opts.title);
+        root.appendChild(titleEl);
+      }
       var svg = svgEl('svg');
       svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
       svg.setAttribute('class', 'viz-plot');
@@ -137,10 +162,16 @@
           line(PL, toPy(v), W - PR, toPy(v), '#e5e7eb');
           label(PL - 8, toPy(v) + 4, fmt(v), 'end');
         }
+        // Vertical gridlines, so a point's x value can be read off
+        // the plot as easily as its y value.
         for (i = 0; i <= 5; i++) {
           v = xMin + (i / 5) * (xMax - xMin);
-          label(toPx(v), H - 10, fmt(v));
+          line(toPx(v), PT, toPx(v), H - PB, '#e5e7eb');
+          label(toPx(v), H - 14, fmt(v));
         }
+        // Axis titles, tucked into the corners clear of the ticks.
+        label(10, 12, 'y', 'start');
+        label(W - PR, H - 2, 'x', 'end');
         if (yMin < 0 && yMax > 0) line(PL, toPy(0), W - PR, toPy(0), '#9ca3af');
         if (xMin < 0 && xMax > 0) line(toPx(0), PT, toPx(0), H - PB, '#9ca3af');
 
@@ -158,7 +189,7 @@
         path.setAttribute('d', d);
         path.setAttribute('fill', 'none');
         path.setAttribute('stroke', '#111827');
-        path.setAttribute('stroke-width', '2');
+        path.setAttribute('stroke-width', '2.5');
         svg.appendChild(path);
         reportHeight();
       }
