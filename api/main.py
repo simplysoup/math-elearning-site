@@ -1104,6 +1104,18 @@ def _validate_editor_blocks(blocks: list[EditorBlockIn]) -> None:
                 raise HTTPException(
                     status_code=400, detail="Video links must be YouTube or Vimeo URLs"
                 )
+        if block.type == "visualization":
+            config = block.data.config or {}
+            if config.get("kind") == "custom-code":
+                code = config.get("code")
+                if not isinstance(code, str) or not code.strip():
+                    raise HTTPException(
+                        status_code=400, detail="A custom visualization needs JavaScript code"
+                    )
+                if len(code) > 50000:
+                    raise HTTPException(
+                        status_code=400, detail="Visualization code is too long (max 50,000 characters)"
+                    )
 
 
 @app.put("/lessons/{lesson_id}/content/", response_model=list[LessonContentOut])

@@ -6,6 +6,8 @@ import MultipleChoiceEditor from '../components/editor/MultipleChoiceEditor';
 import ShortAnswerEditor from '../components/editor/ShortAnswerEditor';
 import CodeEditor from '../components/editor/CodeEditor';
 import VideoEditor from '../components/editor/VideoEditor';
+import VisualizationEditor from '../components/editor/VisualizationEditor';
+import { VIZ_EXAMPLE } from '../components/editor/vizExample';
 
 interface CourseEditorPageProps {
   /** The lesson being edited; null when none is selected yet. */
@@ -53,6 +55,8 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
         return { code: '', language: 'javascript' };
       case 'video':
         return { url: '', caption: '' };
+      case 'visualization':
+        return { engine: 'custom', config: { kind: 'custom-code', code: VIZ_EXAMPLE } };
       default:
         return { text: '' };
     }
@@ -158,6 +162,12 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
         >
           + Video
         </button>
+        <button
+          onClick={() => addBlock('visualization')}
+          className="px-4 py-2 bg-paper hover:bg-gray-100 rounded-sm border border-rule text-sm font-medium"
+        >
+          + Visualization
+        </button>
 
         <div className="flex-grow"></div>
 
@@ -195,11 +205,16 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
                     {block.data?.config?.title || block.data?.config?.kind || 'Visualization'}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600">
-                  This block renders the lesson's interactive visualization. It is
-                  kept exactly as-is when you save; edit it by changing the
-                  lesson content on the server.
-                </p>
+                {block.data?.config?.kind === 'custom-code' ? (
+                  <VisualizationEditor
+                    code={block.data.config.code ?? ''}
+                    onChange={(newData) => updateBlock(block.id, newData)}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-600">
+                    This is a built-in graph, kept exactly as-is when you save. To make your own visualization, add a new one with the + Visualization button.
+                  </p>
+                )}
                 <button
                   onClick={() => deleteBlock(block.id)}
                   className="mt-2 px-2 py-1 bg-red-50 hover:bg-red-100 rounded-sm border border-rule text-pencil text-sm"
@@ -225,6 +240,7 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
                     <option value="short_answer">Short Answer</option>
                     <option value="code">Code Block</option>
                     <option value="video">Video</option>
+                    <option value="visualization">Visualization</option>
                   </select>
 
                   <button

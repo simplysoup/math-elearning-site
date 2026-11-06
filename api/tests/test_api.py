@@ -709,3 +709,49 @@ def test_video_block_rejects_non_youtube_vimeo_urls(client):
     res = client.get(f"/lessons/{lesson_id}/content/", headers=headers)
     assert res.status_code == 200, res.text
     assert res.json() == []
+
+
+def test_custom_viz_block_round_trip(client):
+    headers, _ = _auth_headers(client, "vizteacher@example.com")
+    _, _, lesson_ids = _make_course(client, headers, "Viz Course")
+    lesson_id = lesson_ids[0]
+    code = "viz.plot(x => x * x, { xMin: 0, xMax: 5, yMin: 0, yMax: 25 });"
+    blocks = [
+        {"type": "markdown", "data": {"text": "A parabola."}},
+        {"type": "visualization", "data": {"engine": "custom", "config": {"kind": "custom-code", "code": code}}},
+    ]
+    res = client.put(f"/lessons/{lesson_id}/content/", json=blocks, headers=headers)
+    assert res.status_code == 200, res.text
+    saved = res.json()
+    assert [b["type"] for b in saved] == ["markdown", "visualization"]
+    assert saved[1]["data"]["engine"] == "custom"
+    assert saved[1]["data"]["config"]["kind"] == "custom-code"
+    assert saved[1]["data"]["config"]["code"] == code
+
+    res = client.get(f"/lessons/{lesson_id}/content/", headers=headers)
+    assert res.status_code == 200, res.text
+    assert res.json()[1]["data"]["config"]["code"] == code
+
+
+def test_custom_viz_code_validation(client):
+    headers, _ = _auth_headers(client, "vizteacher2@example.com")
+    _, _, lesson_ids = _make_course(client, headers, "Viz Course 2")
+    lesson_id = lesson_ids[0]
+    # Empty code is rejected.
+    res = client.put(
+        f"/lessons/{lesson_id}/content/",
+        json=[{"type": "visualization", "data": {"engine": "custom", "config": {"kind": "custom-code", "code": "   "}}}],
+        headers=headers,
+    )
+    assert res.status_code == 400, res.text
+    # Over the 50,000-character cap is rejected.
+    res = client.put(
+        f"/lessons/{lesson_id}/content/",
+        json=[{"type": "visualization", "data": {"engine": "custom", "config": {"kind": "custom-code", "code": "x" * 50001}}}],
+        headers=headers,
+    )
+    assert res.status_code == 400, res.text
+    # Nothing was saved by either rejected attempt.
+    res = client.get(f"/lessons/{lesson_id}/content/", headers=headers)
+    assert res.status_code == 200, res.text
+    assert res.json() == []

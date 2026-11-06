@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Visualization</title>
+<style>
+  body { margin: 0; font-family: ui-sans-serif, system-ui, sans-serif; color: #22252a; background: #fff; }
+  #root { padding: 12px; }
+  .viz-slider { display: block; margin: 10px 0; font-size: 14px; }
+  .viz-slider input { width: 100%; margin-top: 4px; }
+  .viz-plot { width: 100%; display: block; }
+  .viz-error { color: #b3352b; border: 1px solid #b3352b; padding: 10px; font-size: 14px; white-space: pre-wrap; }
+  .viz-text { font-size: 14px; margin: 8px 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+/* Host page for teacher-written visualization code.
+ *
+ * SECURITY: this page is only ever loaded inside an iframe with
+ * sandbox="allow-scripts" (see CustomVizFrame). That gives it an
+ * opaque origin: it cannot read the parent page, the user's session,
+ * cookies, localStorage, or the site's API. The parent passes the
+ * teacher's code with postMessage, and this page reports back only
+ * its height and whether the code ran or errored. Teacher code runs
+ * here, in this frame, and nowhere else.
+ */
+(function () {
+  var root = document.getElementById('root');
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var redraws = [];
+
+  function reportHeight() {
+    var h = document.documentElement.scrollHeight || 0;
+    parent.postMessage({ type: 'viz-height', height: h }, '*');
+  }
+  function reportReady() { parent.postMessage({ type: 'viz-ready' }, '*'); }
+  function reportError(message) { parent.postMessage({ type: 'viz-error', message: message }, '*'); }
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function svgEl(tag) { return document.createElementNS(SVGNS, tag); }
+  function fmt(n) {
+    if (n === 0) return '0';
+    var s = Number(n).toPrecision(3);
+    return s.indexOf('.') !== -1 ? s.replace(/\.?0+$/, '') : s;
+  }
+
+  /* The API teachers write against. Small on purpose: a slider, a
+   * function plotter, a line of text, and a way to clear the frame.
+   * Anything drawn with viz.plot redraws when any slider moves, so
+   * `viz.plot(x => amp.value * Math.sin(freq.value * x), ...)`
+   * just works. Teachers can also use document and SVG directly. */
+  var viz = {
+    clear: function () {
+      root.innerHTML = '';
+      redraws = [];
+      reportHeight();
+    },
+
+    text: function (s) {
+      var p = el('p', 'viz-text', String(s));
+      root.appendChild(p);
+      reportHeight();
+      return p;
+    },
+
+    slider: function (label, min, max, value, step) {
+      var wrap = el('label', 'viz-slider');
+      var name = el('span', null, label + ' = ' + value);
+      var input = document.createElement('input');
+      input.type = 'range';
+      input.min = min;
+      input.max = max;
+      input.step = step == null ? 1 : step;
+      input.value = value;
+      var state = { value: Number(value) };
+      input.addEventListener('input', function () {
+        state.value = Number(input.value);
+        name.textContent = label + ' = ' + input.value;
+        redraws.forEach(function (fn) { fn(); });
+        reportHeight();
+      });
+      wrap.appendChild(name);
+      wrap.appendChild(input);
+      root.appendChild(wrap);
+      reportHeight();
+      return state;
+    },
+
+    plot: function (fn, opts) {
+      opts = opts || {};
+      var xMin = opts.xMin != null ? opts.xMin : 0;
+      var xMax = opts.xMax != null ? opts.xMax : 10;
+      var yMin = opts.yMin != null ? opts.yMin : -10;
+      var yMax = opts.yMax != null ? opts.yMax : 10;
+      var W = 560, H = 340, PL = 46, PB = 30, PT = 14, PR = 14;
+      var svg = svgEl('svg');
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+      svg.setAttribute('class', 'viz-plot');
+      svg.style.border = '1px solid #e5e7eb';
+      root.appendChild(svg);
+
+      function toPx(x) { return PL + ((x - xMin) / (xMax - xMin)) * (W - PL - PR); }
+      function toPy(y) { return H - PB - ((y - yMin) / (yMax - yMin)) * (H - PT - PB); }
+      function line(x1, y1, x2, y2, stroke, width) {
+        var l = svgEl('line');
+        l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+        l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+        l.setAttribute('stroke', stroke); l.setAttribute('stroke-width', width || 1);
+        svg.appendChild(l);
+      }
+      function label(x, y, s, anchor) {
+        var t = svgEl('text');
+        t.setAttribute('x', x); t.setAttribute('y', y);
+        t.setAttribute('text-anchor', anchor || 'middle');
+        t.setAttribute('font-size', '11');
+        t.setAttribute('fill', '#6b7280');
+        t.textContent = s;
+        svg.appendChild(t);
+      }
+
+      function draw() {
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        var i, v;
+        for (i = 0; i <= 4; i++) {
+          v = yMin + (i / 4) * (yMax - yMin);
+          line(PL, toPy(v), W - PR, toPy(v), '#e5e7eb');
+          label(PL - 8, toPy(v) + 4, fmt(v), 'end');
+        }
+        for (i = 0; i <= 5; i++) {
+          v = xMin + (i / 5) * (xMax - xMin);
+          label(toPx(v), H - 10, fmt(v));
+        }
+        if (yMin < 0 && yMax > 0) line(PL, toPy(0), W - PR, toPy(0), '#9ca3af');
+        if (xMin < 0 && xMax > 0) line(toPx(0), PT, toPx(0), H - PB, '#9ca3af');
+
+        var path = svgEl('path');
+        var d = '';
+        var inSegment = false;
+        var steps = 200;
+        for (i = 0; i <= steps; i++) {
+          var x = xMin + (i / steps) * (xMax - xMin);
+          var y = fn(x);
+          if (typeof y !== 'number' || !isFinite(y)) { inSegment = false; continue; }
+          d += (inSegment ? ' L ' : ' M ') + toPx(x).toFixed(1) + ' ' + toPy(y).toFixed(1);
+          inSegment = true;
+        }
+        path.setAttribute('d', d);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', '#111827');
+        path.setAttribute('stroke-width', '2');
+        svg.appendChild(path);
+        reportHeight();
+      }
+
+      draw();
+      redraws.push(draw);
+      return svg;
+    },
+  };
+
+  window.addEventListener('message', function (e) {
+    var data = e.data;
+    if (!data || data.type !== 'run-viz' || typeof data.code !== 'string') return;
+    root.innerHTML = '';
+    redraws = [];
+    try {
+      var run = new Function('viz', 'document', data.code);
+      run(viz, document);
+      reportReady();
+    } catch (err) {
+      var message = err && err.message ? err.message : String(err);
+      root.innerHTML = '';
+      root.appendChild(el('div', 'viz-error', 'This visualization has an error: ' + message));
+      reportError(message);
+    }
+    reportHeight();
+  });
+
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(reportHeight).observe(document.documentElement);
+  }
+})();
+</script>
+</body>
+</html>

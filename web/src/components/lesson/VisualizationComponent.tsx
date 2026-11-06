@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { VisualizationContent } from "../../types/course";
+import { CustomVizFrame } from "./CustomVizFrame";
 
 interface VisualizationComponentProps {
     content: VisualizationContent;
@@ -20,6 +21,11 @@ type LinearCombineConfig = {
     b_max?: number;
     x_min?: number;
     x_max?: number;
+};
+
+type CustomCodeConfig = {
+    kind: "custom-code";
+    code?: string;
 };
 
 const W = 560;
@@ -45,7 +51,14 @@ export const VisualizationComponent = ({
     onContinue,
     isCurrent = false,
 }: VisualizationComponentProps) => {
-    const config = content.data.config as LinearCombineConfig | undefined;
+    const config = content.data.config as LinearCombineConfig | CustomCodeConfig | undefined;
+
+    // Teacher-written JavaScript, run in a sandboxed iframe (see
+    // CustomVizFrame). The frame cannot reach the parent page, the
+    // user's session, or the site's API.
+    if (content.data.engine === "custom" && config && config.kind === "custom-code") {
+        return <CustomVizFrame code={config.code || ""} />;
+    }
 
     if (content.data.engine !== "custom" || !config || config.kind !== "linear-combine") {
         return (
