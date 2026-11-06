@@ -159,6 +159,11 @@ const LessonPage = () => {
 
     if (currentIndex < lesson.contents.length - 1) {
       setCurrentIndex(currentIndex + 1);
+    } else {
+      // The last block is reading, not a question, so there is no
+      // "Complete Lesson" button for it; Continuing past it finishes
+      // the lesson. (Question blocks call handleCompleteLesson directly.)
+      handleCompleteLesson();
     }
   };
 
