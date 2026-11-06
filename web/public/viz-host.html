@@ -55,7 +55,11 @@
    * function plotter, a line of text, and a way to clear the frame.
    * Anything drawn with viz.plot redraws when any slider moves, so
    * `viz.plot(x => amp.value * Math.sin(freq.value * x), ...)`
-   * just works. Teachers can also use document and SVG directly. */
+   * just works. Extra drawings need viz.redraw, because a plot's
+   * draw clears its svg on every redraw: register a callback with
+   * viz.redraw and it runs after the plot's own draw, so it can
+   * re-add its elements. Teachers can also use document and SVG
+   * directly. */
   var viz = {
     clear: function () {
       root.innerHTML = '';
@@ -165,6 +169,16 @@
       // code can draw extra elements (tangent lines, rectangles,
       // points) in the same coordinates as the plot.
       return { svg: svg, toPx: toPx, toPy: toPy };
+    },
+
+    // Run fn again whenever any slider moves. Needed for teacher
+    // drawings: a plot's draw clears its svg on every redraw, so
+    // extra elements must be re-added by a redraw callback, after
+    // the plot itself has redrawn. Register after viz.plot calls,
+    // so fn runs after the plot's own draw.
+    redraw: function (fn) {
+      redraws.push(fn);
+      return fn;
     },
   };
 

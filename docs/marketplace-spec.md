@@ -81,7 +81,10 @@ viz API: viz.slider(label, min, max, start, step), viz.plot(f, { xMin,
 xMax, yMin, yMax }), viz.text(s), viz.clear(). Plots redraw when a
 slider moves. viz.plot returns { svg, toPx, toPy }, so teacher code
 can draw extra elements (tangent lines, rectangles, points) in the
-same coordinates as the plot. Code must be non-empty and at most 50,000 characters.
+same coordinates as the plot; viz.redraw(f) re-runs f after every
+slider move, which is where those extra elements are re-added,
+because a plot clears its svg on each redraw. Code must be non-empty
+and at most 50,000 characters.
 The original built-in combine-like-terms graph is still supported and
 is kept as-is by the editor; it is not editable there.
 

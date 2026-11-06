@@ -15,6 +15,9 @@ viz.slider(label, min, max, start, step) — a slider; read its
 viz.plot(f, { xMin, xMax, yMin, yMax }) — draws y = f(x) with axes.
   It returns { svg, toPx, toPy }, so you can draw extra elements
   (tangent lines, rectangles, points) in the same coordinates.
+viz.redraw(f) — run f again whenever a slider moves. A plot clears
+  its svg on every redraw, so re-add your own elements here, after
+  the plot call, and they will be drawn on top each time.
 viz.text(s) — a line of text under the graph.
 viz.clear() — empty the frame.
 You can also use document and SVG directly for anything else.`;
