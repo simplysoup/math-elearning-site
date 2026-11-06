@@ -106,3 +106,13 @@ All Khan Academy unless noted.
   questions render math through MarkdownRender as before. The
   check script (check_calc1.js) asserts KaTeX elements on lesson
   1 step 1 and the completion flow; 17/17 passed after the fix.
+- Explanations rewritten to the style guide (2026-11-06,
+  docs/lesson-style-guide.md): all 12 markdown intros rewritten
+  problem-first, in Paul's voice, with a named trap and the key
+  equation displayed. The questions were already in the guide's
+  shape (each tests the idea, each explanation names the step)
+  and were left as they were; the visualizations were left as
+  they were except the Optimization readout now uses cm³.
+  Re-verified live after the rewrite: 17/17 (check_calc1.js).
+  The check script now waits for the course page content to
+  render instead of a fixed 1.5 s sleep, which had flaked twice.
