@@ -86,3 +86,23 @@ All Khan Academy unless noted.
   Lesson 7 draws its own SVG (ladder, wall, ground) with
   `document`, no viz.plot. The other lessons use `viz.plot` +
   `viz.slider` directly.
+
+## Fixes after launch (2026-11-06)
+
+- Lesson completion screen (commit de1f1c0): completing a lesson
+  no longer dumps the reader back on the course page. It shows a
+  "Lesson complete" panel with a Next lesson button (next lesson
+  in the unit, or the first lesson of the next unit once it is
+  unlocked) and a Back to the course button. Also fixes a
+  duplicate final block when a lesson ends with a reading block.
+- LaTeX markdown (commit 3e5c7d2): the lesson page only renders a
+  markdown block through KaTeX when its format is "latex", but the
+  PUT /lessons/{id}/content/ endpoint hard-coded format="markdown"
+  and the editor input schema had no format field, so every block
+  saved through the editor rendered as plain text with the raw
+  $...$ showing. The endpoint now stores the format the client
+  sends, and the editor has a "Render math with LaTeX" checkbox on
+  markdown blocks. Calc 1's markdown is stored as latex and its
+  questions render math through MarkdownRender as before. The
+  check script (check_calc1.js) asserts KaTeX elements on lesson
+  1 step 1 and the completion flow; 17/17 passed after the fix.
