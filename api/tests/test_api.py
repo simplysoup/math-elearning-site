@@ -80,6 +80,31 @@ def _auth_headers(client, email):
     return {"Authorization": f"Bearer {res.json()['access_token']}"}, res.json()
 
 
+def test_unit_and_lesson_create_accept_json_body(client):
+    # The editor sends {"title": ...} as a JSON body, not a query param;
+    # the endpoints must accept that contract (a query-param-only
+    # signature 422s the editor while the older tests still pass).
+    headers, _ = _auth_headers(client, "jsonbody@example.com")
+    res = client.post("/courses/", json={"title": "JSON Body Course"}, headers=headers)
+    assert res.status_code == 200, res.text
+    course_id = res.json()["id"]
+    res = client.post(
+        f"/courses/{course_id}/units/", json={"title": "Unit One"}, headers=headers
+    )
+    assert res.status_code == 200, res.text
+    unit_id = res.json()["id"]
+    res = client.post(
+        f"/units/{unit_id}/lessons/", json={"title": "Lesson One"}, headers=headers
+    )
+    assert res.status_code == 200, res.text
+    assert res.json()["title"] == "Lesson One"
+    # The query-param form still works too.
+    res = client.post(
+        f"/courses/{course_id}/units/", params={"title": "Unit Two"}, headers=headers
+    )
+    assert res.status_code == 200, res.text
+
+
 def test_register_returns_tokens_and_refresh_flow(client):
     res = client.post(
         "/register",

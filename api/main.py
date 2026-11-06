@@ -849,10 +849,16 @@ def get_course_stats(course_id: int, request: Request, db: Session = Depends(get
 @app.post("/courses/{course_id}/units/")
 def create_unit(
     course_id: int,
-    title: str,
+    body: dict | None = Body(default=None),
+    title: str | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # The editor sends the title as a JSON body; accept the query param
+    # too, since the older tests use it.
+    title = (body or {}).get("title") or title
+    if not title:
+        raise HTTPException(status_code=422, detail="title is required")
     course = _owned_course(db, course_id, current_user)
     unit = Unit(title=title, course_id=course.id)
     db.add(unit)
@@ -882,10 +888,16 @@ def get_units(course_id: int, request: Request, db: Session = Depends(get_db)):
 @app.post("/units/{unit_id}/lessons/")
 def create_lesson(
     unit_id: int,
-    title: str,
+    body: dict | None = Body(default=None),
+    title: str | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # The editor sends the title as a JSON body; accept the query param
+    # too, since the older tests use it.
+    title = (body or {}).get("title") or title
+    if not title:
+        raise HTTPException(status_code=422, detail="title is required")
     unit = db.query(Unit).filter(Unit.id == unit_id).first()
     if not unit:
         raise HTTPException(status_code=404, detail="Unit not found")
