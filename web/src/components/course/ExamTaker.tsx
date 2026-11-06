@@ -100,7 +100,9 @@ const ExamTaker = ({ examId, title, passMark, onAttemptDone }: ExamTakerProps) =
           {result.passed ? 'Passed.' : 'Not passed yet.'}
         </p>
         <p className="mt-1 leading-relaxed">
-          Score: {result.score} out of {result.total}. The pass mark is {passMark} percent.
+          Score: {result.score} percent (
+          {Math.round((result.score / 100) * result.total)} out of {result.total} correct
+          ). The pass mark is {passMark} percent.
         </p>
         <p className="mt-1 text-sm leading-relaxed">
           {result.passed
@@ -126,7 +128,7 @@ const ExamTaker = ({ examId, title, passMark, onAttemptDone }: ExamTakerProps) =
       </p>
       {attempts.length > 0 && (
         <p className="mt-1 text-sm text-gray-600">
-          Previous attempts: {attempts.map((a) => `${a.score}/${a.total}`).join(', ')}
+          Previous attempts: {attempts.map((a) => `${a.score}% (${Math.round((a.score / 100) * a.total)}/${a.total})`).join(', ')}
         </p>
       )}
       <ol className="mt-4 space-y-6">
