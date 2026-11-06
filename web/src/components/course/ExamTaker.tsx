@@ -100,9 +100,7 @@ const ExamTaker = ({ examId, title, passMark, onAttemptDone }: ExamTakerProps) =
           {result.passed ? 'Passed.' : 'Not passed yet.'}
         </p>
         <p className="mt-1 leading-relaxed">
-          Score: {result.score} percent (
-          {Math.round((result.score / 100) * result.total)} out of {result.total} correct
-          ). The pass mark is {passMark} percent.
+          Score: {result.score} percent ({Math.round((result.score / 100) * result.total)} out of {result.total} correct). The pass mark is {passMark} percent.
         </p>
         <p className="mt-1 text-sm leading-relaxed">
           {result.passed
