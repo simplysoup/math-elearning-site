@@ -86,7 +86,10 @@ def upgrade() -> None:
     op.create_table('exam_questions',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('exam_id', sa.Integer(), nullable=False),
-        sa.Column('format', sa.Enum('multiple_choice', 'short_answer', name='questionformatenum'), nullable=False),
+        # Reuse the questionformatenum type the baseline migration
+        # already created for the questions table; creating it again
+        # fails on Postgres ("type already exists").
+        sa.Column('format', sa.Enum('multiple_choice', 'short_answer', name='questionformatenum', create_type=False), nullable=False),
         sa.Column('question_text', sa.Text(), nullable=False),
         sa.Column('explanation', sa.Text(), nullable=True),
         sa.Column('sort_order', sa.Integer(), nullable=True),
