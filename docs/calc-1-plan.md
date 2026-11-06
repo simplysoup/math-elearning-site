@@ -150,3 +150,12 @@ All Khan Academy unless noted.
   f(x) = 2.10). The intro no longer states the limit is 2
   outright; the student reads it off the viz and the check
   question confirms it. Re-verified 17/17 (check_calc1.js).
+- Lesson 1 values table (2026-11-06, commit f775923): the
+  two-pair readout ("x = 0.90 → f(x) = 1.90 · x = 1.10 →
+  f(x) = 2.10") wrapped mid-value on narrow screens and read
+  like a sentence pretending to be a display. New viz.values()
+  API renders the current values as a small table (header row
+  x / f(x), one row per side, aligned columns); lesson 1 uses
+  it, and the editor's API help documents it. Verified on
+  desktop and at 390px width: the table fits without wrapping.
+  Re-verified 17/17 (check_calc1.js).
