@@ -116,3 +116,26 @@ All Khan Academy unless noted.
   Re-verified live after the rewrite: 17/17 (check_calc1.js).
   The check script now waits for the course page content to
   render instead of a fixed 1.5 s sleep, which had flaked twice.
+- Visualization readability rework (2026-11-06, commit f0006e2):
+  the viz was hard to read and the current values were buried in
+  a sentence. The host page (web/public/viz-host.html) now draws
+  vertical gridlines as well as horizontal ones, labels both axes,
+  and offers viz.readout() — a large, bold current-values line
+  with a pencil-red rule — plus a title option on viz.plot for
+  two-plot visualizations. All 12 Calc 1 visualizations were
+  rewritten to it: each shows the current input and output in the
+  readout and the explanation in a small line underneath, and each
+  draws the markers the idea needs — the dashed limit line and
+  open circle (lessons 1-2), the two one-sided values (lesson 3),
+  secant/tangent labels (lesson 4), plot titles and a dot at
+  x = 1 (lessons 5-6, 9-10), tick marks and axis labels on the
+  ladder drawing (lesson 7), the dashed maximum line (lesson 8),
+  the exact-area line and the gap (lesson 11), and the area edge
+  and the point on the curve (lesson 12). The editor's API help
+  documents viz.readout and the title option. Re-verified live:
+  17/17 (check_calc1.js) and 12/12 (check_viz.js). The old
+  check_viz regression for the built-in combine-like-terms graph
+  was retired: its course (Foundational Algebra, course 1) was
+  deleted when Calculus 1 went live, so there is no live course
+  carrying it. Screenshots of the new visualizations:
+  viz-check/viz-shot-lesson-{1,3,5,7,11}.png.
