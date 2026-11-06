@@ -69,6 +69,20 @@ Finishing a lesson records a completion for that student in that course.
 Completion is per lesson, per student. A student's own progress is shown
 to them on their profile and on the course page.
 
+## Visualizations
+
+A visualization block is teacher-written JavaScript. The teacher writes
+it in the editor (starting from a working example) or uploads a .js file;
+the code is stored in the block's config and rendered on the lesson page
+inside an iframe with sandbox="allow-scripts" only, so the frame has an
+opaque origin and cannot reach the parent page, the user's session, or
+the site's API. The code runs in the student's browser against a small
+viz API: viz.slider(label, min, max, start, step), viz.plot(f, { xMin,
+xMax, yMin, yMax }), viz.text(s), viz.clear(). Plots redraw when a
+slider moves. Code must be non-empty and at most 50,000 characters.
+The original built-in combine-like-terms graph is still supported and
+is kept as-is by the editor; it is not editable there.
+
 ## Exams
 
 Exams are optional. A unit may have an exam at its end, and a course
