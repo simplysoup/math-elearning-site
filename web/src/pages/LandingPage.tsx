@@ -3,6 +3,15 @@ import { API_BASE_URL } from '../api';
 import { useNavigate } from 'react-router-dom';
 import type { Course } from '../types/course';
 
+type SortKey = 'stars' | 'views' | 'completions' | 'newest';
+
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: 'stars', label: 'Stars' },
+  { value: 'views', label: 'Views' },
+  { value: 'completions', label: 'Completions' },
+  { value: 'newest', label: 'Newest' },
+];
+
 const LandingPage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -10,14 +19,16 @@ const LandingPage: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [sort, setSort] = useState<SortKey>('newest');
 
   const navigate = useNavigate();
 
-  // Fetch courses from API
+  // Fetch published courses from the catalogue, in the chosen order.
   useEffect(() => {
     const fetchCourses = async () => {
+      setLoading(true);
       try {
-        const res = await fetch(`${API_BASE_URL}/courses/`);
+        const res = await fetch(`${API_BASE_URL}/courses/?sort=${sort}`);
         if (!res.ok) throw new Error('Failed to fetch courses');
         const data: Course[] = await res.json();
         setCourses(data);
@@ -29,7 +40,7 @@ const LandingPage: React.FC = () => {
     };
 
     fetchCourses();
-  }, []);
+  }, [sort]);
 
   // Get all unique tags
   const allTags = Array.from(
@@ -106,6 +117,21 @@ const LandingPage: React.FC = () => {
             />
           </div>
 
+          {/* Sort */}
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <label htmlFor="course-sort" className="font-mono text-xs tracking-widest uppercase">Sort:</label>
+            <select
+              id="course-sort"
+              value={sort}
+              onChange={e => setSort(e.target.value as SortKey)}
+              className="px-3 py-1.5 text-sm border border-rule rounded-sm bg-paper"
+            >
+              {SORT_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+
           {/* Tag filters */}
           {allTags.length > 0 && (
             <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -155,8 +181,14 @@ const LandingPage: React.FC = () => {
                       {course.description}
                     </span>
                     <span className="mt-2 block font-mono text-xs">
-                      {course.chapter_count ?? course.chapters?.length ?? 0} chapters ·{' '}
-                      {course.lesson_count ?? course.chapters?.reduce((sum, ch) => sum + (ch.lessons?.length || 0), 0) ?? 0} lessons
+                      {course.unit_count ?? course.units?.length ?? 0} units ·{' '}
+                      {course.lesson_count ?? course.units?.reduce((sum, u) => sum + (u.lessons?.length || 0), 0) ?? 0} lessons
+                    </span>
+                    <span className="mt-1 block font-mono text-xs text-pencil">
+                      {course.stars ?? course.stats?.stars ?? 0} stars ·{' '}
+                      {course.views ?? course.stats?.views ?? 0} views ·{' '}
+                      {course.course_completions ?? course.stats?.course_completions ?? 0} course completions ·{' '}
+                      {course.lessons_completed ?? course.stats?.lessons_completed ?? 0} lessons completed
                     </span>
                   </span>
                   <span className="font-mono text-sm text-pencil whitespace-nowrap">

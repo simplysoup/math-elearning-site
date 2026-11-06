@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { API_BASE_URL, apiFetch } from '../api';
+import { apiFetch } from '../api';
 import { useAuth } from '../components/auth/AuthContext';
 import { useParams, useNavigate } from "react-router-dom";
-import { Course, Chapter, Lesson, LessonContent } from '../types/course';
+import { Course, Unit, Lesson, LessonContent } from '../types/course';
 import { LessonHeader } from '../components/lesson/LessonHeader';
 import { LessonComponent } from '../components/lesson/LessonComponent';
 import { ProgressBar } from '../components/lesson/ProgressBar';
+import CommentsThread from '../components/course/CommentsThread';
 
 type UserAnswer = {
   [index: number]: string | number | null;
@@ -18,23 +19,24 @@ type CompletedContent = {
 };
 
 const LessonPage = () => {
-  const { courseId, chapterId, lessonId } = useParams();
+  const { courseId, unitId, lessonId } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const contentEndRef = useRef<HTMLDivElement>(null);
 
   const [course, setCourse] = useState<Course | null>(null);
-  const [chapter, setChapter] = useState<Chapter | null>(null);
+  const [unit, setUnit] = useState<Unit | null>(null);
   const [lesson, setLesson] = useState<Lesson & { contents: LessonContent[] }>({
     id: 0,
     title: '',
     description: '',
     course_id: 0,
-    chapter_id: 0,
+    unit_id: 0,
     contents: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [locked, setLocked] = useState(false);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswer>({});
@@ -46,31 +48,36 @@ const LessonPage = () => {
   useEffect(() => {
     const fetchLessonData = async () => {
       try {
-        if (!courseId || !chapterId || !lessonId) throw new Error("Missing URL parameters");
+        if (!courseId || !unitId || !lessonId) throw new Error("Missing URL parameters");
 
         // Fetch course
-        const resCourse = await fetch(`${API_BASE_URL}/courses/${courseId}`);
+        const resCourse = await apiFetch(`/courses/${courseId}`);
         if (!resCourse.ok) throw new Error("Course not found");
         const courseData: Course = await resCourse.json();
         setCourse(courseData);
 
-        // Fetch chapters
-        const resChapters = await fetch(`${API_BASE_URL}/courses/${courseId}/chapters/`);
-        if (!resChapters.ok) throw new Error("Chapters not found");
-        const chapters: Chapter[] = await resChapters.json();
-        const currentChapter = chapters.find(ch => ch.id.toString() === chapterId);
-        if (!currentChapter) throw new Error("Chapter not found");
-        setChapter(currentChapter);
+        // Fetch units
+        const resUnits = await apiFetch(`/courses/${courseId}/units/`);
+        if (!resUnits.ok) throw new Error("Units not found");
+        const units: Unit[] = await resUnits.json();
+        const currentUnit = units.find(u => u.id.toString() === unitId);
+        if (!currentUnit) throw new Error("Unit not found");
+        setUnit(currentUnit);
 
         // Fetch lessons
-        const resLessons = await fetch(`${API_BASE_URL}/chapters/${chapterId}/lessons/`);
+        const resLessons = await apiFetch(`/units/${unitId}/lessons/`);
         if (!resLessons.ok) throw new Error("Lessons not found");
         const lessons: Lesson[] = await resLessons.json();
         const currentLesson = lessons.find(lsn => lsn.id.toString() === lessonId);
         if (!currentLesson) throw new Error("Lesson not found");
 
-        // Fetch lesson content
-        const resContent = await fetch(`${API_BASE_URL}/lessons/${lessonId}/content/`);
+        // Fetch lesson content. A locked unit returns 403 here.
+        const resContent = await apiFetch(`/lessons/${lessonId}/content/`);
+        if (resContent.status === 403) {
+          setLocked(true);
+          setLesson({ ...currentLesson, contents: [] });
+          return;
+        }
         if (!resContent.ok) throw new Error("Lesson content not found");
         const contents: LessonContent[] = await resContent.json();
 
@@ -83,7 +90,7 @@ const LessonPage = () => {
     };
 
     fetchLessonData();
-  }, [courseId, chapterId, lessonId]);
+  }, [courseId, unitId, lessonId]);
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -92,6 +99,7 @@ const LessonPage = () => {
     setShowExplanation(false);
     setIsChecking(false);
     setCompletedContents([]);
+    setLocked(false);
   }, [lessonId]);
 
   useEffect(() => {
@@ -185,7 +193,28 @@ const LessonPage = () => {
 
   if (loading) return <div className="p-6">Loading...</div>;
   if (error) return <div className="p-6 text-red-500">{error}</div>;
-  if (!course || !chapter || !lesson) return <div className="p-6">Lesson not found</div>;
+  if (!course || !unit || !lesson) return <div className="p-6">Lesson not found</div>;
+
+  if (locked) {
+    return (
+      <div className="px-4 py-8 max-w-2xl mx-auto">
+        <LessonHeader course={course} unit={unit} lesson={lesson} />
+        <p className="leading-relaxed">
+          This lesson is locked. Finish the previous unit first. Its
+          lessons and its exam, if it has one, must be complete before
+          this unit opens.
+        </p>
+        <button
+          onClick={() => navigate(`/courses/${courseId}`)}
+          className="mt-4 px-4 py-2 bg-pencil hover:bg-pencil-dark text-white text-sm font-medium rounded-sm"
+        >
+          Back to the course
+        </button>
+      </div>
+    );
+  }
+
+  const isOwner = user?.id !== undefined && course.owner_id !== undefined && user.id === course.owner_id;
 
   return (
     <div className="px-4 py-8 max-w-2xl mx-auto">
@@ -193,7 +222,7 @@ const LessonPage = () => {
       <p className="font-mono text-xs tracking-widest uppercase text-pencil">
         Step {Math.min(currentIndex + 1, lesson.contents.length)} of {lesson.contents.length}
       </p>
-      <LessonHeader course={course} chapter={chapter} lesson={lesson} />
+      <LessonHeader course={course} unit={unit} lesson={lesson} />
 
       <div className="space-y-8">
         {completedContents.map((completed, idx) => (
@@ -236,6 +265,8 @@ const LessonPage = () => {
 
         <div ref={contentEndRef} />
       </div>
+
+      <CommentsThread kind="lesson" targetId={lesson.id} isCourseOwner={isOwner} />
     </div>
   );
 };

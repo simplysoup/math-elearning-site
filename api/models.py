@@ -1,6 +1,7 @@
 from sqlalchemy import (
     Column, Integer, String, Text, ForeignKey, Boolean,
-    Enum, DateTime, JSON, func, PrimaryKeyConstraint, ForeignKey, UniqueConstraint
+    Enum, DateTime, JSON, func, PrimaryKeyConstraint, ForeignKey, UniqueConstraint,
+    Index,
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship, declarative_base
@@ -73,9 +74,18 @@ class Course(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     created_by = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
+    # Marketplace ownership: the account that created the course. This
+    # is the owner; created_by is kept for backwards compatibility and
+    # is set to the same user for new courses.
+    owner_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
+    visibility = Column(String(20), nullable=False, server_default='private', default='private')
+    level = Column(String(100), nullable=True)
+    estimated_time_minutes = Column(Integer, nullable=True)
+    prerequisites = Column(Text, nullable=True)
 
+    owner = relationship("User", foreign_keys=[owner_id])
     tags = relationship("CourseTag", back_populates="course")
-    chapters = relationship("Chapter", back_populates="course")
+    units = relationship("Unit", back_populates="course")
     lessons = relationship("Lesson", back_populates="course")
 
 class CourseCreator(Base):
@@ -166,8 +176,11 @@ class CourseTag(Base):
     tag = relationship("Tag", back_populates="course_tags")
 
 
-class Chapter(Base):
-    __tablename__ = "chapters"
+class Unit(Base):
+    """A gated block of lessons. Formerly Chapter (renamed, same table
+    content under the new name `units`)."""
+
+    __tablename__ = "units"
 
     id = Column(Integer, primary_key=True)
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
@@ -178,15 +191,15 @@ class Chapter(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
-    course = relationship("Course", back_populates="chapters")
-    lessons = relationship("Lesson", back_populates="chapter")
+    course = relationship("Course", back_populates="units")
+    lessons = relationship("Lesson", back_populates="unit")
 
 
 class Lesson(Base):
     __tablename__ = "lessons"
 
     id = Column(Integer, primary_key=True)
-    chapter_id = Column(Integer, ForeignKey("chapters.id", ondelete="CASCADE"))
+    unit_id = Column(Integer, ForeignKey("units.id", ondelete="CASCADE"))
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
     title = Column(String(255), nullable=False)
     description = Column(Text)
@@ -194,7 +207,7 @@ class Lesson(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
-    chapter = relationship("Chapter", back_populates="lessons")
+    unit = relationship("Unit", back_populates="lessons")
     course = relationship("Course", back_populates="lessons")
     contents = relationship("LessonContent", back_populates="lesson")
 
@@ -276,3 +289,133 @@ class ShortAnswerQuestion(Base):
     correct_answer = Column(Text, nullable=False)
 
     question = relationship("Question", back_populates="short_answer")
+
+
+# --- Marketplace tables ---
+
+class CourseView(Base):
+    """One row per course page load. The owner's own views are never
+    recorded (see POST /courses/{id}/view)."""
+
+    __tablename__ = "course_views"
+
+    id = Column(Integer, primary_key=True)
+    course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    viewed_at = Column(DateTime, server_default=func.now())
+
+    course = relationship("Course", backref="views")
+    user = relationship("User", backref="course_views")
+
+
+class Star(Base):
+    """One star per person per course. The (course_id, user_id) primary
+    key enforces uniqueness at the DB level."""
+
+    __tablename__ = "stars"
+
+    course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    course = relationship("Course", backref="stars")
+    user = relationship("User", backref="stars")
+
+    __table_args__ = (
+        PrimaryKeyConstraint('course_id', 'user_id', name='pk_stars'),
+    )
+
+
+class Exam(Base):
+    """A unit exam (unit_id set, is_final False) or a course final exam
+    (unit_id NULL, is_final True). At most one exam per unit (unique on
+    unit_id, NULLs excluded by both dialects) and at most one final
+    exam per course (partial unique index below)."""
+
+    __tablename__ = "exams"
+
+    id = Column(Integer, primary_key=True)
+    course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
+    unit_id = Column(Integer, ForeignKey("units.id", ondelete="CASCADE"), nullable=True)
+    is_final = Column(Boolean, nullable=False, default=False)
+    title = Column(String(255), nullable=False)
+    pass_mark = Column(Integer, nullable=False, default=70)
+    created_at = Column(DateTime, server_default=func.now())
+
+    course = relationship("Course", backref="exams")
+    unit = relationship("Unit", backref="exams")
+    questions = relationship("ExamQuestion", back_populates="exam", cascade="all, delete-orphan")
+    attempts = relationship("ExamAttempt", back_populates="exam", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint('unit_id', name='uq_exam_unit_id'),
+        Index(
+            'uq_exam_final_per_course', 'course_id', unique=True,
+            sqlite_where=(is_final == True),  # noqa: E712
+            postgresql_where=(is_final == True),  # noqa: E712
+        ),
+    )
+
+
+class ExamQuestion(Base):
+    __tablename__ = "exam_questions"
+
+    id = Column(Integer, primary_key=True)
+    exam_id = Column(Integer, ForeignKey("exams.id", ondelete="CASCADE"), nullable=False)
+    format = Column(Enum(QuestionFormatEnum), nullable=False)
+    question_text = Column(Text, nullable=False)
+    explanation = Column(Text, nullable=True)
+    sort_order = Column(Integer, nullable=True)
+
+    exam = relationship("Exam", back_populates="questions")
+    options = relationship("ExamQuestionOption", back_populates="question", cascade="all, delete-orphan")
+
+
+class ExamQuestionOption(Base):
+    """Multiple-choice options (one is_correct per question), or the
+    single correct answer string for a short-answer question (stored
+    as one option row with is_correct True)."""
+
+    __tablename__ = "exam_question_options"
+
+    id = Column(Integer, primary_key=True)
+    question_id = Column(Integer, ForeignKey("exam_questions.id", ondelete="CASCADE"), nullable=False)
+    option_text = Column(Text, nullable=False)
+    is_correct = Column(Boolean, nullable=False, default=False)
+    sort_order = Column(Integer, nullable=True)
+
+    question = relationship("ExamQuestion", back_populates="options")
+
+
+class ExamAttempt(Base):
+    """One row per attempt; retakes are unlimited, latest decides."""
+
+    __tablename__ = "exam_attempts"
+
+    id = Column(Integer, primary_key=True)
+    exam_id = Column(Integer, ForeignKey("exams.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    score = Column(Integer, nullable=False, default=0)  # 0-100
+    passed = Column(Boolean, nullable=False, default=False)
+    attempted_at = Column(DateTime, server_default=func.now())
+
+    exam = relationship("Exam", back_populates="attempts")
+    user = relationship("User", backref="exam_attempts")
+
+
+class Comment(Base):
+    """A course comment has lesson_id NULL; a lesson comment has both
+    course_id and lesson_id set."""
+
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True)
+    course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
+    lesson_id = Column(Integer, ForeignKey("lessons.id", ondelete="CASCADE"), nullable=True)
+    author_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    text = Column(Text, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    course = relationship("Course", backref="comments")
+    lesson = relationship("Lesson", backref="comments")
+    author = relationship("User", backref="comments")

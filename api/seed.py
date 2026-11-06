@@ -11,8 +11,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from database import SessionLocal
+from models import User
 from models import (
-    Chapter,
     Course,
     CourseTag,
     Lesson,
@@ -21,6 +21,7 @@ from models import (
     Question,
     QuestionOption,
     Tag,
+    Unit,
     VisualizationContent,
 )
 
@@ -36,9 +37,21 @@ def seed() -> None:
             title="Foundational Algebra",
             description="Algebra from the beginning: variables, expressions, and combining like terms.",
             image_url="/assets/algebra.jpeg",
+            visibility="published",
+            level="beginner",
+            estimated_time_minutes=30,
+            prerequisites="None",
         )
         db.add(course)
         db.flush()
+        # The sample course belongs to the lowest user id when one
+        # exists (mirrors the migration's data step); otherwise it
+        # stays ownerless but published.
+        first_user = db.query(User).order_by(User.id).first()
+        if first_user is not None:
+            course.owner_id = first_user.id
+            course.created_by = first_user.id
+            db.flush()
 
         for name in ("algebra", "math", "beginner"):
             tag = db.query(Tag).filter(Tag.name == name).first()
@@ -48,18 +61,18 @@ def seed() -> None:
                 db.flush()
             db.add(CourseTag(course_id=course.id, tag_id=tag.id))
 
-        chapter = Chapter(
+        unit = Unit(
             course_id=course.id,
             title="Variables & Expressions",
             description="Introduction to algebraic variables",
             image_url="/images/algebra-variables.jpg",
             sort_order=1,
         )
-        db.add(chapter)
+        db.add(unit)
         db.flush()
 
         lesson = Lesson(
-            chapter_id=chapter.id,
+            unit_id=unit.id,
             course_id=course.id,
             title="Algebraic Variables",
             description="Understanding variables in algebra",

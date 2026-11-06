@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Course, Chapter, Lesson } from "../../types/course";
+import { Course, Unit, Lesson } from "../../types/course";
 
-export const LessonHeader = ({ course, chapter, lesson }: { course: Course; chapter: Chapter; lesson: Lesson }) => {
+export const LessonHeader = ({ course, unit, lesson }: { course: Course; unit: Unit; lesson: Lesson }) => {
     const navigate = useNavigate();
 
     return (
@@ -22,7 +22,7 @@ export const LessonHeader = ({ course, chapter, lesson }: { course: Course; chap
                                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
                             </svg>
                             <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">
-                                {chapter.title}
+                                {unit.title}
                             </span>
                         </div>
                     </li>

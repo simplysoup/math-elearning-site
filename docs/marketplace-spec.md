@@ -163,8 +163,12 @@ people who are not students of the course.
   of bad courses is not decided yet.
 - The pass mark default is 70 percent. Change it per exam if that
   number is wrong.
-- Gating is read as: the next unit unlocks once every lesson in the
-  current unit is complete, and lessons inside a unit can be done in
-  any order. Correct this if gating should work differently.
+- Gating, decided 2026-11-06: lesson content is served only if the unit
+  is unlocked. The owner always sees everything. A logged-in student
+  sees a unit when the previous unit is complete (all its lessons done
+  and its exam passed if it has one). An anonymous visitor sees only
+  the first unit. Completing a lesson and attempting an exam are
+  blocked when the unit is locked. The reasoning is that reading needs
+  no account for the first unit, while progress requires an account.
 - Whether a star can be removed after it is left is not decided.
 - Whether the owner's own page views count is decided: they do not.

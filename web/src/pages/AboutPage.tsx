@@ -29,7 +29,7 @@ const AboutPage: React.FC = () => {
         <h2 className="text-2xl font-semibold mt-8 mb-3">Writing</h2>
         <p className="leading-relaxed mb-4">
           To write a course, make an account and open the editor. Pick a
-          lesson to edit, or make a new course, chapter, or lesson.
+          lesson to edit, or make a new course, unit, or lesson.
           Saving puts it live straight away, and anyone with the link can
           read it.
         </p>
