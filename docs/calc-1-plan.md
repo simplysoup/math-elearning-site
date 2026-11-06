@@ -159,3 +159,23 @@ All Khan Academy unless noted.
   it, and the editor's API help documents it. Verified on
   desktop and at 390px width: the table fits without wrapping.
   Re-verified 17/17 (check_calc1.js).
+- Skill pass across all 12 lessons (2026-11-06, guide commit
+  8009070): the style guide gained section 8 (the
+  visualization: one variable/one idea, predict first, surface
+  the current values, draw the target, compare don't remember,
+  let the edge cases happen, the default shows the mechanism,
+  plus the viz API) and the checklist gained the viz items.
+  Every lesson's intro now asks for a prediction before the
+  slider is moved and does not state the specific numerical
+  answer its check question asks for (the viz is the evidence,
+  the question asks, the explanation reveals). Lesson 2 got
+  the full lesson-1 treatment (mirror dot, values table).
+  Readouts with more than one value became viz.values
+  tables: lessons 2, 5, 6, 7, 9, 12. Lesson 11's "exact area
+  8/3" label was removed from the viz and its note (the
+  dashed line stays, unlabeled, so the student reads its
+  value off the axis). Lesson 6's mistake example changed
+  from sin(3x) to sin(2x) so the check question's sin(3x)
+  is a fresh application; lesson 10's example from x²+5 to
+  x²+7 for the same reason. Re-verified 17/17; screenshots
+  eyeballed for lessons 2, 7, 9.
