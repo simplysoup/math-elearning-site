@@ -39,6 +39,19 @@ The forum has two parts.
    thread. Any logged-in user can comment. The course owner can delete
    comments on their own course.
 
+## Structure: courses, units, lessons
+
+A course is made of units. A unit is a block of lessons. Units and
+lessons are distinct: a lesson is one short page, a unit is the block
+that groups lessons together.
+
+Units are gated. The first unit is open. The next unit unlocks only
+once every lesson in the current unit is complete. Lessons inside a
+unit can be done in any order.
+
+The existing chapter is the unit. The chapter table becomes the unit
+table, renamed. There is no separate chapter level on top of units.
+
 ## Lessons and completion
 
 A lesson is a short page: an explanation, a graph you can move, a
@@ -46,14 +59,18 @@ question to answer, or a code block. Video is still a placeholder block
 and is out of scope for this spec.
 
 Finishing a lesson records a completion for that student in that course.
-Completion is per lesson, per student. A student's own progress is shown
-to them on their profile and on the course page.
+Completion is per lesson, per student. A unit is complete when every
+lesson in it is complete. A student's own progress is shown to them on
+their profile and on the course page.
 
 ## Exams
 
-Each course has one exam at the end: a set of questions. The exam has a
-pass mark, set when the exam is written. The default pass mark is 70
-percent.
+Exams are optional. A course may have an exam or not.
+
+When a course has one, it has one exam at the end: a set of questions.
+The exam has a pass mark, set when the exam is written. The default
+pass mark is 70 percent. The exam unlocks once the final unit is
+complete.
 
 Retakes are unlimited. There is no limit on attempts, no waiting period,
 and no penalty for failing. The goal is to maximise learning, not to
@@ -89,9 +106,9 @@ Who sees what:
 
 A star is a single star, one per person. There is no 1 to 5 rating.
 
-A person can star a course only after they have completed a unit and
-passed the course test. A unit here means a lesson. The course card
-shows the total number of stars.
+A person can star a course only after they have completed a unit and,
+if the course has an exam, passed it. A course with no exam needs only
+the completed unit. The course card shows the total number of stars.
 
 ## Course card stats
 
@@ -103,6 +120,9 @@ people who are not students of the course.
 
 - Course: owner, visibility (private or published), level, estimated
   time, prerequisites.
+- Unit: the block of lessons in a course, in order. The existing
+  chapter table becomes the unit table. Lessons belong to a unit, and
+  a unit unlocks only after the previous unit is complete.
 - Enrollment: which students are enrolled in which course, and when.
 - Course views: one row per course page load, or a counter. The count
   must not count the owner's own views.
@@ -114,8 +134,9 @@ people who are not students of the course.
 
 ## Build order
 
-1. Ownership and publishing: course owner, private by default, publish
-   and unpublish, owner-only editing.
+1. Ownership, publishing, and units: course owner, private by default,
+   publish and unpublish, owner-only editing, and the chapter to unit
+   change with gating.
 2. Enrollment and progress views: enroll, the student view of their own
    progress, and the teacher roster with each student's history.
 3. Views and card stats: page view counting, lessons completed, course
@@ -135,7 +156,8 @@ people who are not students of the course.
   of bad courses is not decided yet.
 - The pass mark default is 70 percent. Change it per exam if that
   number is wrong.
-- "Completed a unit" for star eligibility is read as completing a
-  lesson. Correct this if a unit means something else.
+- Gating is read as: the next unit unlocks once every lesson in the
+  current unit is complete, and lessons inside a unit can be done in
+  any order. Correct this if gating should work differently.
 - Whether a star can be removed after it is left is not decided.
 - Whether the owner's own page views count is decided: they do not.
