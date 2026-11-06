@@ -5,6 +5,7 @@ import MarkdownEditor from '../components/editor/MarkdownEditor';
 import MultipleChoiceEditor from '../components/editor/MultipleChoiceEditor';
 import ShortAnswerEditor from '../components/editor/ShortAnswerEditor';
 import CodeEditor from '../components/editor/CodeEditor';
+import VideoEditor from '../components/editor/VideoEditor';
 
 interface CourseEditorPageProps {
   /** The lesson being edited; null when none is selected yet. */
@@ -50,6 +51,8 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
         return { question: '', answer: '', explanation: '' };
       case 'code':
         return { code: '', language: 'javascript' };
+      case 'video':
+        return { url: '', caption: '' };
       default:
         return { text: '' };
     }
@@ -149,6 +152,12 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
         >
           + Code Block
         </button>
+        <button
+          onClick={() => addBlock('video')}
+          className="px-4 py-2 bg-paper hover:bg-gray-100 rounded-sm border border-rule text-sm font-medium"
+        >
+          + Video
+        </button>
 
         <div className="flex-grow"></div>
 
@@ -215,6 +224,7 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
                     <option value="multiple_choice">Multiple Choice</option>
                     <option value="short_answer">Short Answer</option>
                     <option value="code">Code Block</option>
+                    <option value="video">Video</option>
                   </select>
 
                   <button
@@ -274,6 +284,14 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
                     <CodeEditor
                       code={block.data.code}
                       language={block.data.language}
+                      onChange={(newData) => updateBlock(block.id, newData)}
+                    />
+                  )}
+
+                  {block.type === 'video' && (
+                    <VideoEditor
+                      url={block.data.url ?? ''}
+                      caption={block.data.caption ?? ''}
                       onChange={(newData) => updateBlock(block.id, newData)}
                     />
                   )}

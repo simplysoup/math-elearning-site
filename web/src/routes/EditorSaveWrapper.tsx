@@ -30,6 +30,13 @@ function toEditorBlocks(contents: LessonContent[]): ContentBlock[] {
     if (c.type === 'markdown') {
       return { id: uuidv4(), type: 'markdown', data: { text: c.data.text } };
     }
+    if (c.type === 'video') {
+      return {
+        id: uuidv4(),
+        type: 'video',
+        data: { url: c.data.url, caption: c.data.caption ?? '' },
+      };
+    }
     if (c.type === 'visualization') {
       return {
         id: uuidv4(),
@@ -60,9 +67,12 @@ function toEditorBlocks(contents: LessonContent[]): ContentBlock[] {
         },
       };
     }
-    // Video and unknown kinds have no editor; keep them out rather than
+    // Unknown kinds have no editor; keep them out rather than
     // silently dropping them on save. The editor refuses to load them.
-    throw new Error(`This lesson contains a "${c.type}" block the editor cannot edit.`);
+    // (All known kinds are handled above, so this is only reachable
+    // for a type the API returns that this code does not know yet.)
+    const unknownKind = (c as { type?: string }).type ?? "unknown";
+    throw new Error(`This lesson contains a "${unknownKind}" block the editor cannot edit.`);
   });
 }
 

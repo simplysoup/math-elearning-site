@@ -3,6 +3,7 @@ export type ContentBlockType =
   | 'multiple_choice'
   | 'short_answer'
   | 'code'
+  | 'video'
   // Read-only in the editor: an interactive visualization block is
   // kept as-is on save, never edited or re-created here.
   | 'visualization';

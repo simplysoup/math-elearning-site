@@ -1,43 +1,38 @@
 import { VideoContent } from "../../types/course";
+import { videoEmbedUrl } from "./videoEmbed";
 
 interface VideoComponentProps {
-    content: VideoContent;
-    onContinue?: () => void;
-    isCurrent?: boolean;  // Add this prop
+  content: VideoContent;
 }
 
-export const VideoComponent = ({ 
-    content,
-    onContinue,
-    isCurrent = false  // Default to false
-}: VideoComponentProps) => {
+export const VideoComponent = ({ content }: VideoComponentProps) => {
+  const embed = videoEmbedUrl(content.data.url);
+
+  if (!embed) {
     return (
-        <div className="space-y-4">
-            <div className="bg-gray-100 p-4 rounded-lg">
-                <div className="aspect-w-16 aspect-h-9 bg-black rounded">
-                    <div className="flex items-center justify-center h-full">
-                        <div className="text-white text-center">
-                            <div className="text-lg font-medium mb-2">Video Content</div>
-                            <div className="text-gray-300">
-                                {content.data.caption || 'Video player will appear here'}
-                            </div>
-                            {content.data.duration && (
-                                <div className="text-sm text-gray-400 mt-2">
-                                    Duration: {content.data.duration} seconds
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {isCurrent && onContinue && (  // Only show if current and callback exists
-                <button
-                    onClick={onContinue}
-                    className="px-4 py-2 bg-black-600 text-white rounded hover:bg-black-700"
-                >
-                    Continue
-                </button>
-            )}
-        </div>
+      <div className="border border-rule rounded-sm p-4">
+        <p className="text-sm">
+          This video link is not supported. Use a YouTube or Vimeo link.
+        </p>
+      </div>
     );
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="aspect-video w-full border border-rule rounded-sm overflow-hidden bg-black">
+        <iframe
+          src={embed}
+          title={content.data.caption || "Video"}
+          className="h-full w-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          loading="lazy"
+        />
+      </div>
+      {content.data.caption && (
+        <p className="text-sm text-gray-600">{content.data.caption}</p>
+      )}
+    </div>
+  );
 };

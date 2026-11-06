@@ -108,6 +108,16 @@ class EditorCodeBlock(BaseModel):
     data: EditorCodeData
 
 
+class EditorVideoData(BaseModel):
+    url: str
+    caption: str | None = None
+
+
+class EditorVideoBlock(BaseModel):
+    type: Literal["video"]
+    data: EditorVideoData
+
+
 class EditorVisualizationData(BaseModel):
     engine: str = "custom"
     config: dict
@@ -125,6 +135,7 @@ EditorBlockIn = Union[
     EditorMultipleChoiceBlock,
     EditorShortAnswerBlock,
     EditorCodeBlock,
+    EditorVideoBlock,
     EditorVisualizationBlock,
 ]
 
@@ -179,4 +190,14 @@ class VisualizationContent(BaseModel):
     data: VisualizationData
 
 
-LessonContentOut = Union[QuestionContent, MarkdownContent, VisualizationContent]
+class VideoData(BaseModel):
+    url: str
+    caption: str | None = None
+
+
+class VideoContent(BaseModel):
+    type: Literal["video"]
+    data: VideoData
+
+
+LessonContentOut = Union[QuestionContent, MarkdownContent, VisualizationContent, VideoContent]

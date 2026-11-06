@@ -1,5 +1,7 @@
 import os
+import re
 from datetime import datetime
+from urllib.parse import urlparse, parse_qs
 
 from fastapi import FastAPI, Depends, HTTPException, Request, Body
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,7 +12,7 @@ from database import engine, get_db
 from models import (
     Base, Course, Unit, Lesson, LessonContent, MarkdownContent,
     Question, QuestionOption, ShortAnswerQuestion, User,
-    VisualizationContent, CourseStudent, UserLessonProgress,
+    VisualizationContent, VideoContent, CourseStudent, UserLessonProgress,
     CourseView, Star, Exam, ExamQuestion, ExamQuestionOption,
     ExamAttempt, Comment, Tag, CourseTag,
 )
@@ -57,6 +59,45 @@ app.add_middleware(
 def _public_user(user: User) -> dict:
     """The user object the frontend stores: never a password hash."""
     return {"id": user.id, "email": user.email, "username": user.username}
+
+
+def parse_video_url(url: str):
+    """YouTube or Vimeo URLs only: return (provider, video_id, embed_url), else None.
+
+    The embed URL is built from the parsed video ID, never from the raw
+    input, so an arbitrary URL can never become an iframe src.
+    """
+    if not url or not isinstance(url, str):
+        return None
+    try:
+        parsed = urlparse(url.strip())
+    except ValueError:
+        return None
+    host = (parsed.hostname or "").lower()
+    if host in ("youtu.be", "www.youtu.be"):
+        video_id = parsed.path.strip("/").split("/")[0] if parsed.path.strip("/") else ""
+        if video_id:
+            return ("youtube", video_id, f"https://www.youtube-nocookie.com/embed/{video_id}")
+        return None
+    if host in ("youtube.com", "www.youtube.com", "m.youtube.com",
+                "youtube-nocookie.com", "www.youtube-nocookie.com"):
+        if parsed.path == "/watch":
+            video_id = (parse_qs(parsed.query).get("v") or [None])[0]
+            if video_id:
+                return ("youtube", video_id, f"https://www.youtube-nocookie.com/embed/{video_id}")
+            return None
+        parts = [p for p in parsed.path.split("/") if p]
+        if len(parts) >= 2 and parts[0] in ("embed", "shorts", "v", "live"):
+            return ("youtube", parts[1], f"https://www.youtube-nocookie.com/embed/{parts[1]}")
+        return None
+    if host in ("vimeo.com", "www.vimeo.com", "player.vimeo.com"):
+        parts = [p for p in parsed.path.split("/") if p]
+        if parts and parts[0] == "video" and len(parts) >= 2 and parts[1].isdigit():
+            return ("vimeo", parts[1], f"https://player.vimeo.com/video/{parts[1]}")
+        if parts and parts[0].isdigit():
+            return ("vimeo", parts[0], f"https://player.vimeo.com/video/{parts[0]}")
+        return None
+    return None
 
 
 def _public_user_full(user: User) -> dict:
@@ -126,6 +167,14 @@ def _serialize_lesson_content(db: Session, lesson_id: int) -> list:
             output.append({
                 "type": "visualization",
                 "data": {"engine": viz.engine, "config": viz.config},
+            })
+        elif content.content_type == 'video':
+            video = db.query(VideoContent).filter(VideoContent.content_id == content.id).first()
+            if not video:
+                continue
+            output.append({
+                "type": "video",
+                "data": {"url": video.url, "caption": video.caption},
             })
         elif content.content_type == 'question':
             question = db.query(Question).filter(Question.content_id == content.id).first()
@@ -1050,6 +1099,11 @@ def _validate_editor_blocks(blocks: list[EditorBlockIn]) -> None:
                 raise HTTPException(
                     status_code=400, detail="A question needs question text"
                 )
+        if block.type == "video":
+            if not parse_video_url(block.data.url or ""):
+                raise HTTPException(
+                    status_code=400, detail="Video links must be YouTube or Vimeo URLs"
+                )
 
 
 @app.put("/lessons/{lesson_id}/content/", response_model=list[LessonContentOut])
@@ -1094,6 +1148,9 @@ def replace_content(
         db.query(VisualizationContent).filter(
             VisualizationContent.content_id.in_(old_ids)
         ).delete(synchronize_session=False)
+        db.query(VideoContent).filter(
+            VideoContent.content_id.in_(old_ids)
+        ).delete(synchronize_session=False)
         db.query(LessonContent).filter(
             LessonContent.id.in_(old_ids)
         ).delete(synchronize_session=False)
@@ -1128,6 +1185,17 @@ def replace_content(
                 content_id=content.id,
                 engine=block.data.engine,
                 config=block.data.config,
+            ))
+        elif block.type == "video":
+            content = LessonContent(
+                lesson_id=lesson_id, content_type="video", sort_order=index
+            )
+            db.add(content)
+            db.flush()
+            db.add(VideoContent(
+                content_id=content.id,
+                url=block.data.url,
+                caption=block.data.caption,
             ))
         elif block.type == "multiple_choice":
             options = [o for o in block.data.options if o.strip()]

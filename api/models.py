@@ -226,6 +226,7 @@ class LessonContent(Base):
     markdown = relationship("MarkdownContent", back_populates="content", uselist=False)
     question = relationship("Question", back_populates="content", uselist=False)
     visualization = relationship("VisualizationContent", back_populates="content", uselist=False)
+    video = relationship("VideoContent", back_populates="content", uselist=False)
 
 
 class MarkdownContent(Base):
@@ -236,6 +237,23 @@ class MarkdownContent(Base):
     format = Column(String(20), nullable=False)
 
     content = relationship("LessonContent", back_populates="markdown")
+
+
+class VideoContent(Base):
+    """An embedded video block: a YouTube or Vimeo link.
+
+    Only the source URL and an optional caption are stored. The
+    frontend builds the embed URL from the parsed video ID, so an
+    arbitrary URL can never become an iframe src.
+    """
+
+    __tablename__ = "video_contents"
+
+    content_id = Column(Integer, ForeignKey("lesson_contents.id", ondelete="CASCADE"), primary_key=True)
+    url = Column(Text, nullable=False)
+    caption = Column(Text, nullable=True)
+
+    content = relationship("LessonContent", back_populates="video")
 
 
 class VisualizationContent(Base):

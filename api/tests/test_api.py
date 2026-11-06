@@ -670,3 +670,42 @@ def test_teaching_students_and_progress_views(client):
     mine = [c for c in listed if c["id"] == course_id]
     assert len(mine) == 1 and mine[0]["stars"] == 1
     assert all(c["stars"] <= 1 for c in listed)
+
+
+def test_video_block_round_trip_youtube_and_vimeo(client):
+    headers, _ = _auth_headers(client, "videoteacher@example.com")
+    _, _, lesson_ids = _make_course(client, headers, "Video Course")
+    lesson_id = lesson_ids[0]
+    blocks = [
+        {"type": "video", "data": {"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "caption": "Intro"}},
+        {"type": "video", "data": {"url": "https://vimeo.com/123456789", "caption": None}},
+        {"type": "video", "data": {"url": "https://youtu.be/abc123XYZ-_", "caption": "Short link"}},
+    ]
+    res = client.put(f"/lessons/{lesson_id}/content/", json=blocks, headers=headers)
+    assert res.status_code == 200, res.text
+    saved = res.json()
+    assert [b["type"] for b in saved] == ["video", "video", "video"]
+    assert saved[0]["data"]["url"] == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    assert saved[0]["data"]["caption"] == "Intro"
+    assert saved[1]["data"]["url"] == "https://vimeo.com/123456789"
+    assert saved[2]["data"]["url"] == "https://youtu.be/abc123XYZ-_"
+
+    res = client.get(f"/lessons/{lesson_id}/content/", headers=headers)
+    assert res.status_code == 200, res.text
+    assert [b["type"] for b in res.json()] == ["video", "video", "video"]
+
+
+def test_video_block_rejects_non_youtube_vimeo_urls(client):
+    headers, _ = _auth_headers(client, "videoteacher2@example.com")
+    _, _, lesson_ids = _make_course(client, headers, "Video Course 2")
+    lesson_id = lesson_ids[0]
+    res = client.put(
+        f"/lessons/{lesson_id}/content/",
+        json=[{"type": "video", "data": {"url": "https://example.com/evil.mp4", "caption": ""}}],
+        headers=headers,
+    )
+    assert res.status_code == 400, res.text
+    # Nothing was saved: the lesson still has no content.
+    res = client.get(f"/lessons/{lesson_id}/content/", headers=headers)
+    assert res.status_code == 200, res.text
+    assert res.json() == []
