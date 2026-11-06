@@ -30,6 +30,26 @@ const CoursePage = () => {
   const viewRecordedRef = useRef(false);
   const enrolledRef = useRef(false);
 
+  // Units carry their locked flags, so this is also what refreshes a
+  // unit's lock state after an exam pass (progress/exams alone do not).
+  const loadUnits = async (openFirst = false) => {
+    if (!courseId) return;
+    const resUnits = await apiFetch(`/courses/${courseId}/units/`);
+    const unitsData: Unit[] = resUnits.ok ? await resUnits.json() : [];
+    const unitsWithLessons = await Promise.all(
+      unitsData.map(async (unit) => {
+        const resLessons = await apiFetch(`/units/${unit.id}/lessons/`);
+        const lessons: Lesson[] = resLessons.ok ? await resLessons.json() : [];
+        return { ...unit, lessons };
+      })
+    );
+    unitsWithLessons.sort((a, b) => (a.sort_order ?? a.id) - (b.sort_order ?? b.id));
+    setUnits(unitsWithLessons);
+    if (openFirst && unitsWithLessons.length > 0) {
+      setExpandedUnits({ [unitsWithLessons[0].id]: true });
+    }
+  };
+
   useEffect(() => {
     const fetchCourseData = async () => {
       if (!courseId) return;
@@ -40,25 +60,7 @@ const CoursePage = () => {
         const courseData: Course = await resCourse.json();
         setCourse(courseData);
 
-        // Fetch units
-        const resUnits = await apiFetch(`/courses/${courseId}/units/`);
-        const unitsData: Unit[] = resUnits.ok ? await resUnits.json() : [];
-
-        // For each unit, fetch its lessons
-        const unitsWithLessons = await Promise.all(
-          unitsData.map(async (unit) => {
-            const resLessons = await apiFetch(`/units/${unit.id}/lessons/`);
-            const lessons: Lesson[] = resLessons.ok ? await resLessons.json() : [];
-            return { ...unit, lessons };
-          })
-        );
-        // Keep the contract order: sort_order first, then id.
-        unitsWithLessons.sort((a, b) => (a.sort_order ?? a.id) - (b.sort_order ?? b.id));
-        setUnits(unitsWithLessons);
-        // Open the first unit by default so the lessons are visible.
-        if (unitsWithLessons.length > 0) {
-          setExpandedUnits({ [unitsWithLessons[0].id]: true });
-        }
+        await loadUnits(true);
 
         // Exams for the course (unit exams and the final exam).
         const resExams = await apiFetch(`/courses/${courseId}/exams`);
@@ -109,6 +111,9 @@ const CoursePage = () => {
     if (resProgress.ok) setProgress(await resProgress.json());
     const resExams = await apiFetch(`/courses/${courseId}/exams`);
     if (resExams.ok) setExams(await resExams.json());
+    // A passed exam can unlock the next unit; refetch the units so their
+    // locked flags (and the lesson Done marks) update without a reload.
+    await loadUnits();
   };
 
   const toggleUnit = (unitId: number) => {
