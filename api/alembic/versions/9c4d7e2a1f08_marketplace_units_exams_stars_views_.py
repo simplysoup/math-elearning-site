@@ -86,10 +86,13 @@ def upgrade() -> None:
     op.create_table('exam_questions',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('exam_id', sa.Integer(), nullable=False),
-        # Reuse the questionformatenum type the baseline migration
-        # already created for the questions table; creating it again
-        # fails on Postgres ("type already exists").
-        sa.Column('format', sa.Enum('multiple_choice', 'short_answer', name='questionformatenum', create_type=False), nullable=False),
+        # Plain string, not an Enum: the questions table already owns
+        # the native questionformatenum type, and sa.Enum(...,
+        # create_type=False) does not stop SQLAlchemy emitting CREATE
+        # TYPE for it (create_type belongs to the Postgres ENUM class,
+        # not the generic Enum). The model still declares an Enum, so
+        # values round-trip as strings through it.
+        sa.Column('format', sa.String(length=20), nullable=False),
         sa.Column('question_text', sa.Text(), nullable=False),
         sa.Column('explanation', sa.Text(), nullable=True),
         sa.Column('sort_order', sa.Integer(), nullable=True),
