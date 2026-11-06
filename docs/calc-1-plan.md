@@ -1,8 +1,16 @@
-# Calculus 1 course plan
+# Calculus 1 course — built and live
 
-Paused at Nicholas's request, 2026-11-06. The course is not built
-yet. This file holds the structure and the video research so the
-build can resume without redoing the searches.
+Built 2026-11-06, course id 26 on the live site, published to the
+marketplace. Owner: the builder account `calc-teacher@example.com`
+(the author has no account on the live site yet; transfer ownership
+to his account once he registers). Builder script:
+`~/workspace/viz-check/build_calc1.py`. Browser check:
+`~/workspace/viz-check/check_calc1.js` — 14/14 passed on the live
+site (catalogue, gating, viz frames, video embeds, question).
+
+All other test courses were deleted at the same time, so Calculus 1
+is the only course on the live site. The test user accounts remain;
+only the courses were removed.
 
 ## Structure
 
@@ -27,97 +35,54 @@ block), one short YouTube video, one multiple-choice check question.
   11. Riemann sums and definite integrals
   12. The Fundamental Theorem of Calculus
 
-## Video candidates
+## Videos used
 
-All Khan Academy unless noted. "Found in search output" means the
-URL appeared verbatim in a search result; those IDs still need a
-final existence check (YouTube oEmbed) before the course is built.
-"Needs ID" means no video ID surfaced yet.
+Every ID below was verified with the YouTube oEmbed endpoint
+(HTTP 200 with the expected title) before the course was built.
+All Khan Academy unless noted.
 
-1. What is a limit? — https://www.youtube.com/watch?v=riXcZT2ICjA
-   "Introduction to limits | Limits | Differential Calculus | Khan
-   Academy", about 11:32. Found in search output.
-2. Evaluating limits — https://www.youtube.com/watch?v=gWSDDopD9sk
-   "Limit examples (part 3) | Limits | Differential Calculus | Khan
-   Academy". Found in search output.
-3. Continuity — https://www.youtube.com/embed/33J1JHSTv2k
-   "Continuity at a point | Limits and continuity | AP Calculus AB |
-   Khan Academy". Embed URL from a video index; verify before use.
-   Alternate: "Continuity over an interval",
-   https://www.youtube.com/watch?v=ENIQiqxFpBc (found in search output).
-4. The derivative as a limit — NEEDS ID. "Derivative as a concept"
-   (Khan Academy) — the Khan page would not load for the text
-   fetcher (client challenge). Find its YouTube ID before building.
-5. Differentiation rules — https://www.youtube.com/watch?v=z1lwai-lIzY
-   "Power rule introduction (old) | Taking derivatives | Khan
-   Academy". Found via a video index Source line; verify before use.
-   Alternates (embed URLs from a UBC guide): product rule
-   https://www.youtube.com/embed/79ngr0Bur38, quotient rule
-   https://www.youtube.com/embed/ho87DN9wO70.
-6. The chain rule — https://www.youtube.com/watch?v=0T0QrHO56qg
-   "Chain rule | Derivative rules | AP Calculus AB | Khan Academy".
-   Found in search output.
-7. Related rates — https://www.youtube.com/embed/ELetzk6BZow
-   "Ladder Rate-of-Change Problem | Khan Academy". Embed URL from
-   the Khan Academy mirror; verify before use. Alternate:
-   "Related rates: Approaching cars",
-   https://www.youtube.com/watch?v=wV59XWLmv0c (found via archive.org
-   Source line).
-8. Optimization — ID 1TK8V_qmqrk, "Optimizing box volume
-   graphically" (Khan Academy). ID taken from a mirror's .mp4
-   filename; verify before use. Alternate (Lumen Learning):
-   https://www.youtube.com/embed/_lNDHOV2FlQ.
-9. Curve sketching / concavity — NEEDS ID. "Introducing concavity"
-   (Khan Academy) — no video ID surfaced in search output. Find
-   its YouTube ID before building.
-10. Antiderivatives — ID MMv-027KEqU, "Antiderivatives and
-    indefinite integrals" (Khan Academy), about 3:43. ID taken from
-    a mirror's .mp4 filename; verify before use. Alternate:
-    "Indefinite integrals (part II)",
-    https://www.youtube.com/watch?v=mHvSYRUEWnE.
-11. Riemann sums — https://www.youtube.com/embed/dEAk0BHBYCM
-    "Riemann approximation introduction | Accumulation and Riemann
-    sums | AP Calculus AB | Khan Academy". Embed URL from a course
-    page iframe; verify before use. Alternate: "Introduction to
-    integral calculus", ID WDZMjYJyH6k, about 4:52 (from a search
-    mirror; verify before use).
-12. The Fundamental Theorem of Calculus — https://www.youtube.com/watch?v=WapSrovs7yM
-    "Finding derivative with fundamental theorem of calculus | AP
-    Calculus AB | Khan Academy". Found in search output. Alternate:
-    "Proof of fundamental theorem of calculus",
-    https://www.youtube.com/watch?v=pWtt0AvU0KA (about 14 minutes,
-    long for this course; prefer the shorter one).
+1. What is a limit? — riXcZT2ICjA, "Introduction to limits".
+2. Evaluating limits — gWSDDopD9sk, "Limit examples (part 3)".
+3. Continuity — 33J1JHSTv2k, "Continuity at a point".
+4. The derivative as a limit — N2PpRnFqnqY, "Derivative as a
+   concept", 7:16.
+5. Differentiation rules — z1lwai-lIzY, "Power rule introduction
+   (old)". Product/quotient rules are covered in the lesson text;
+   their videos (79ngr0Bur38, ho87DN9wO70) were verified but not
+   used.
+6. The chain rule — 0T0QrHO56qg, "Chain rule".
+7. Related rates — ELetzk6BZow, "Ladder Rate-of-Change Problem".
+8. Optimization — wS0i9k8UiCg, "Optimizing box volume
+   graphically". Note: the mirror-sourced ID 1TK8V_qmqrk turned out
+   to be "Optimization: sum of squares", not the box video, so it
+   was not used. The lesson uses a 24x24 sheet (clean numbers: max
+   at x = 4, V = 1024); the video uses a 20x30 sheet and the lesson
+   text says so.
+9. Curve sketching / concavity — 0uCjI5J4ew4, "Graphs: Concavity -
+   01. Intro" (APEX Calculus, not Khan). No Khan concavity video
+   ID surfaced in search; the APEX intro is on-topic and short.
+10. Antiderivatives — MMv-027KEqU, "Antiderivatives and indefinite
+    integrals".
+11. Riemann sums — dEAk0BHBYCM, "Riemann approximation
+    introduction". Note: the alternate WDZMjYJyH6k is a 2.5-hour
+    mega-video, not a short lesson video; it was not used.
+12. The Fundamental Theorem of Calculus — WapSrovs7yM, "Finding
+    derivative with fundamental theorem of calculus".
 
-## Visualization notes (for the build)
+## Visualization notes
 
-- Lessons 4 and 11 need custom drawing on top of `viz.plot`, so
-  the build first extends the plot API to return
-  `{ svg, toPx, toPy }` (not built yet — resume step 2 below). Lesson 4:
-  secant line through (a, f(a)) and (a+h, f(a+h)), h on a slider,
-  approaching the tangent as h -> 0. Lesson 11: Riemann rectangles
-  under the curve, n on a slider, with the running sum.
-- The other lessons use `viz.plot` + `viz.slider` directly: limit
-  approach (x slider toward the point), power rule (n slider, f
-  and f' together), chain rule (inner coefficient slider),
-  related rates (time slider, ladder position), optimization (cut
-  size slider, volume curve), concavity (x slider, sign of f'),
-  antiderivatives (C slider, the family of curves), FTC
-  (accumulation function with x slider, computed numerically).
-- Ownership: the course will be created under a builder account
-  (the author has no account on the live site yet). Transfer
-  ownership to his account once he registers.
-
-## Resume steps
-
-1. Verify every candidate ID above with the YouTube oEmbed
-   endpoint (`https://www.youtube.com/oembed?url=...&format=json`
-   returns the title, or 404). Find IDs for lessons 4 and 9.
-2. Extend `viz-host.html` so `viz.plot` returns `{ svg, toPx, toPy }`
-   (small change; update the editor help text and the marketplace
-   spec line), rebuild, test, deploy, re-run the viz regression
-   check.
-3. Write the course-builder script (create course, units, lessons,
-   PUT content per lesson), run it against the live API, publish
-   the course.
-4. Verify in a real browser: 4 units, 12 lessons, viz frames ready,
-   video embeds present, gating works.
+- `viz.plot` returns `{ svg, toPx, toPy }` (commit 3d2bd09), so
+  teacher code can draw extra elements in the plot's coordinates.
+- `viz.redraw(f)` (commit ee8a6cb) re-runs f after every slider
+  move. It is required for custom drawings: a plot's draw clears
+  its svg on every redraw, so dots, secant lines, and rectangles
+  must be re-added by a redraw callback registered after the plot
+  call. Every Calc 1 visualization that draws its own elements
+  uses this pattern.
+- Lesson 4: secant line through (2, 4) and (2+h, (2+h)^2), h on a
+  slider, plus a fixed dashed tangent line. Lesson 11: Riemann
+  rectangles under y = x^2, n on a slider, with the running sum
+  (n = 4 gives 1.750, n = 20 gives about 2.54, exact area 8/3).
+  Lesson 7 draws its own SVG (ladder, wall, ground) with
+  `document`, no viz.plot. The other lessons use `viz.plot` +
+  `viz.slider` directly.
