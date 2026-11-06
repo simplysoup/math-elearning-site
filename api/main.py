@@ -1175,7 +1175,8 @@ def replace_content(
             db.add(content)
             db.flush()
             db.add(MarkdownContent(
-                content_id=content.id, text=block.data.text, format="markdown"
+                content_id=content.id, text=block.data.text,
+                format=block.data.format,
             ))
         elif block.type == "code":
             content = LessonContent(

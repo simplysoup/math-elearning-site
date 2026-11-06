@@ -269,11 +269,12 @@ const CourseEditorPage = ({ lessonId, initialContent = [], onSave }: CourseEdito
                   {block.type === 'markdown' && (
                     <MarkdownEditor
                       content={block.data.text}
-                      // MarkdownEditor emits { text } — the object, not
-                      // the string. Spreading it as the text field used
-                      // to nest it ({ text: { text } }), which the API
-                      // rejected with a 422 on every save.
-                      onChange={({ text }) => updateBlock(block.id, { ...block.data, text })}
+                      format={block.data.format}
+                      // MarkdownEditor emits { text, format } — the
+                      // object, not the string. Spreading it as the
+                      // text field used to nest it ({ text: { text } }),
+                      // which the API rejected with a 422 on every save.
+                      onChange={({ text, format }) => updateBlock(block.id, { ...block.data, text, format })}
                     />
                   )}
 

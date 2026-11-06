@@ -68,6 +68,10 @@ class CommentIn(BaseModel):
 
 class EditorMarkdownData(BaseModel):
     text: str
+    # "latex" renders the block through the KaTeX markdown pipeline
+    # ($...$ math); "markdown" renders as plain text. Defaults to
+    # "markdown" so the editor's existing blocks are unchanged.
+    format: Literal["markdown", "latex"] = "markdown"
 
 
 class EditorMarkdownBlock(BaseModel):
