@@ -46,8 +46,13 @@ lessons are distinct: a lesson is one short page, a unit is the block
 that groups lessons together.
 
 Units are gated. The first unit is open. The next unit unlocks only
-once every lesson in the current unit is complete. Lessons inside a
-unit can be done in any order.
+once the current unit is complete. Lessons inside a unit can be done
+in any order.
+
+A unit is complete when every lesson in it is complete and, if the
+unit has an exam, the student has passed it. A course is complete when
+every unit is complete and, if the course has a final exam, the student
+has passed it.
 
 The existing chapter is the unit. The chapter table becomes the unit
 table, renamed. There is no separate chapter level on top of units.
@@ -59,18 +64,19 @@ question to answer, or a code block. Video is still a placeholder block
 and is out of scope for this spec.
 
 Finishing a lesson records a completion for that student in that course.
-Completion is per lesson, per student. A unit is complete when every
-lesson in it is complete. A student's own progress is shown to them on
-their profile and on the course page.
+Completion is per lesson, per student. A student's own progress is shown
+to them on their profile and on the course page.
 
 ## Exams
 
-Exams are optional. A course may have an exam or not.
+Exams are optional. A unit may have an exam at its end, and a course
+may have a final exam. A unit with no exam needs only its lessons
+completed.
 
-When a course has one, it has one exam at the end: a set of questions.
-The exam has a pass mark, set when the exam is written. The default
-pass mark is 70 percent. The exam unlocks once the final unit is
-complete.
+Each exam is a set of questions with a pass mark, set when the exam is
+written. The default pass mark is 70 percent. A unit exam unlocks once
+every lesson in that unit is complete. The final exam unlocks once the
+final unit is complete.
 
 Retakes are unlimited. There is no limit on attempts, no waiting period,
 and no penalty for failing. The goal is to maximise learning, not to
@@ -107,8 +113,8 @@ Who sees what:
 A star is a single star, one per person. There is no 1 to 5 rating.
 
 A person can star a course only after they have completed a unit and,
-if the course has an exam, passed it. A course with no exam needs only
-the completed unit. The course card shows the total number of stars.
+if that unit has an exam, passed it. The course card shows the total
+number of stars.
 
 ## Course card stats
 
@@ -126,8 +132,9 @@ people who are not students of the course.
 - Enrollment: which students are enrolled in which course, and when.
 - Course views: one row per course page load, or a counter. The count
   must not count the owner's own views.
-- Exam: the questions for the end-of-course test, the pass mark, and
-  the attempts and scores per student.
+- Exam: the questions for a unit exam or a final exam, the pass mark,
+  and the attempts and scores per student. An exam belongs to a unit
+  or to the course as its final exam.
 - Stars: one row per person per course.
 - Comments: one row per comment, on a course or a lesson, with the
   author and the time.
@@ -141,8 +148,8 @@ people who are not students of the course.
    progress, and the teacher roster with each student's history.
 3. Views and card stats: page view counting, lessons completed, course
    completions, and the four numbers on the course card.
-4. Exams: the end-of-course test, the pass mark, unlimited retakes, and
-   exam status per student.
+4. Exams: unit exams and the final exam, the pass mark, unlimited
+   retakes, and exam status per student.
 5. Stars: eligibility (completed a unit and passed the test), one star
    per person, and the star count on the card.
 6. Forum comments: comment threads on courses and lessons, and deletion
