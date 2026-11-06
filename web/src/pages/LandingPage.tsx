@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../api';
 import { useNavigate } from 'react-router-dom';
-import type { Course, LessonContent } from '../types/course';
-import { VisualizationComponent } from '../components/lesson/VisualizationComponent';
+import type { Course } from '../types/course';
 
 const LandingPage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -11,7 +10,6 @@ const LandingPage: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  const [tryViz, setTryViz] = useState<LessonContent | null>(null);
 
   const navigate = useNavigate();
 
@@ -31,18 +29,6 @@ const LandingPage: React.FC = () => {
     };
 
     fetchCourses();
-  }, []);
-
-  // The live graph from the first lesson, so the landing page shows
-  // the actual product instead of describing it.
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/lessons/1/content/`)
-      .then((res) => (res.ok ? res.json() : []))
-      .then((contents: LessonContent[]) => {
-        const viz = contents.find((c) => c.type === 'visualization');
-        if (viz) setTryViz(viz);
-      })
-      .catch(() => {});
   }, []);
 
   // Get all unique tags
@@ -95,18 +81,16 @@ const LandingPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="grid gap-10 lg:grid-cols-5">
-        {/* Left: masthead + course ledger */}
+        {/* Left: what this is + course ledger */}
         <div className="lg:col-span-3">
-          <p className="font-mono text-xs tracking-widest uppercase text-pencil">
-            A math workbook
-          </p>
           <h1 className="mt-3 text-4xl sm:text-5xl font-bold leading-tight tracking-tight">
-            Algebra you can move.
+            Free math courses. Write your own.
           </h1>
           <p className="mt-4 max-w-xl text-lg leading-relaxed">
-            Each lesson is a page to work through: a short explanation, a
-            graph you can drag around, and a question to answer before you
-            turn the page. No videos to sit through.
+            This is a free place to learn math and to write math courses.
+            Every course here is free to read, and anyone can write one.
+            Log in to keep your progress and to use the editor. There is
+            nothing to buy.
           </p>
 
           {/* Search */}
@@ -194,31 +178,42 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: try the graph — the real product, not a description */}
+        {/* Right: how it works */}
         <div className="lg:col-span-2">
           <div className="lg:sticky lg:top-20 border border-rule rounded-sm p-5">
             <p className="font-mono text-xs tracking-widest uppercase text-pencil">
-              Try it — no account needed
+              How it works
             </p>
-            <h2 className="mt-2 text-2xl font-bold leading-tight">
-              Move the sliders. The lines move.
-            </h2>
-            {tryViz ? (
-              <div className="mt-4">
-                <VisualizationComponent content={tryViz as Extract<LessonContent, { type: 'visualization' }>} />
-                <button
-                  onClick={() => navigate('/courses/1/chapters/1/lessons/1')}
-                  className="mt-4 inline-block bg-pencil hover:bg-pencil-dark text-white text-sm font-medium px-4 py-2 rounded-sm transition-colors"
-                >
-                  Work through the full lesson →
-                </button>
-              </div>
-            ) : (
-              <p className="mt-4 text-sm">
-                The first lesson opens with an interactive graph: slide x and
-                watch 3x + 2x become 5x.
-              </p>
-            )}
+            <ol className="mt-4 space-y-4 list-none">
+              <li>
+                <p className="font-semibold">1. Read a course.</p>
+                <p className="mt-1 text-sm leading-relaxed">
+                  Open one below and work through it, one short lesson at a
+                  time. A lesson is an explanation, a graph you can move,
+                  and a question to answer. No account needed.
+                </p>
+              </li>
+              <li>
+                <p className="font-semibold">2. Keep your place.</p>
+                <p className="mt-1 text-sm leading-relaxed">
+                  Make an account and your progress is saved, so you can
+                  pick up where you left off.
+                </p>
+              </li>
+              <li>
+                <p className="font-semibold">3. Write a course.</p>
+                <p className="mt-1 text-sm leading-relaxed">
+                  Use the editor to write lessons, then share the link.
+                  Anyone can read it, free.
+                </p>
+              </li>
+            </ol>
+            <button
+              onClick={() => navigate('/editor')}
+              className="mt-5 inline-block bg-pencil hover:bg-pencil-dark text-white text-sm font-medium px-4 py-2 rounded-sm transition-colors"
+            >
+              Make a course →
+            </button>
           </div>
         </div>
       </div>

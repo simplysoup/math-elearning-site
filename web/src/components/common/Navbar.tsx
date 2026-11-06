@@ -53,11 +53,9 @@ const Navbar = () => {
             <Link to="/" className="hover:text-pencil">
               Home
             </Link>
-            {isAuthenticated && (
-              <Link to="/editor" className="hover:text-pencil">
-                Editor
-              </Link>
-            )}
+            <Link to="/editor" className="hover:text-pencil">
+              Editor
+            </Link>
             <Link to="/about" className="hover:text-pencil">
               About
             </Link>
@@ -123,14 +121,12 @@ const Navbar = () => {
             >
               Home
             </Link>
-            {isAuthenticated && (
-              <Link
-                to="/editor"
-                className="text-center py-2 hover:text-pencil"
-              >
-                Editor
-              </Link>
-            )}
+            <Link
+              to="/editor"
+              className="text-center py-2 hover:text-pencil"
+            >
+              Editor
+            </Link>
             <Link
               to="/about"
               className="text-center py-2 hover:text-pencil"

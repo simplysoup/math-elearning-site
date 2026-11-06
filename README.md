@@ -1,13 +1,11 @@
 # math-elearning-site
 
-An unfinished math e-learning site: a React + TypeScript frontend, a FastAPI
-backend, and a PostgreSQL database, composed with Docker.
+A free place to learn math and to write math courses: a React + TypeScript
+frontend, a FastAPI backend, and a PostgreSQL database, composed with Docker.
 
-> **Status: unfinished, last active May 2025.** The last commit on the
-> default branch (`master`) is "fixed login page bugs. added profile page
-> (no backend support)". Treat anything below marked "unverified" as not
-> confirmed to work — this README describes what is in the repository, not
-> a tested, working deployment.
+Every course is free to read. Anyone with an account can write a course and
+share it with a link. There is no paywall. The site is deployed on a VPS
+on port 18765; the API and database are internal only.
 
 ## What it is
 

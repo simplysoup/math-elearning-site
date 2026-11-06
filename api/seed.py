@@ -34,7 +34,7 @@ def seed() -> None:
 
         course = Course(
             title="Foundational Algebra",
-            description="Master core algebraic concepts",
+            description="Algebra from the beginning: variables, expressions, and combining like terms.",
             image_url="/assets/algebra.jpeg",
         )
         db.add(course)
@@ -76,7 +76,15 @@ def seed() -> None:
         db.add(
             MarkdownContent(
                 content_id=markdown.id,
-                text="In algebra, variables (like $x$ or $y$) represent unknown values...",
+                text=(
+                    "A variable is a letter that stands for a number you do not know yet. "
+                    "In $3x + 2x$, $x$ is the variable. The $3$ and the $2$ say how many of it you have.\n\n"
+                    "If $x = 4$, then $3x$ means $3 \\times 4 = 12$ and $2x$ means $2 \\times 4 = 8$. "
+                    "Added together, that is $12 + 8 = 20$.\n\n"
+                    "There is a shorter way. Terms with the same variable can be combined first: "
+                    "$3x + 2x = 5x$. Then $5 \\times 4 = 20$, the same answer. "
+                    "The graph below shows this. Move $x$ and watch the two lines add up to the third."
+                ),
                 format="latex",
             )
         )
@@ -93,7 +101,7 @@ def seed() -> None:
                 config={
                     "kind": "linear-combine",
                     "title": "Combine like terms: ax + bx",
-                    "prompt": "Move the sliders. What happens to 3x + 2x as x changes — and what single term is it equal to?",
+                    "prompt": "Move the sliders. What happens to 3x + 2x as x changes? What single term is it equal to?",
                     "a": 3,
                     "b": 2,
                     "x": 4,

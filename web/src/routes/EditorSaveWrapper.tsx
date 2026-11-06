@@ -216,7 +216,7 @@ const EditorSaveWrapper = () => {
       <h1 className="text-2xl font-bold px-6 pt-6">Lesson editor</h1>
       <p className="px-6 text-gray-600 text-sm">
         Pick a lesson to edit it. Saving replaces the lesson's whole
-        content — visualizations are kept as-is.
+        content. Visualizations are kept as-is.
       </p>
 
       {error && (

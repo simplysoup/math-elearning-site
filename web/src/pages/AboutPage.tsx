@@ -4,49 +4,45 @@ import { Link } from 'react-router-dom';
 const AboutPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-paper p-8">
-      <div className="max-w-4xl mx-auto bg-paper border border-rule rounded-sm p-8">
-        <h1 className="text-4xl font-bold text-center mb-6">About</h1>
-        <p className="text-gray-700 leading-relaxed mb-4">
-          Place AI Slop Here
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold mb-6">About</h1>
+
+        <h2 className="text-2xl font-semibold mt-8 mb-3">What this is</h2>
+        <p className="leading-relaxed mb-4">
+          This is a free place to learn math and to write math courses.
+          Every course here is free to read. There is no paywall and no
+          advertising.
         </p>
-        <p className="text-gray-700 leading-relaxed mb-4">
-          Learn Math or Smth
+
+        <h2 className="text-2xl font-semibold mt-8 mb-3">How a course works</h2>
+        <p className="leading-relaxed mb-4">
+          A course is a set of lessons. Each lesson is a short page: an
+          explanation, a graph you can move around, and a question to
+          answer. You work through them in order, at your own pace.
         </p>
-        <h2 className="text-2xl font-semibold mt-8 mb-4">Real People</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="flex items-center">
-            <img
-              src="/assets/team/jane_doe.jpg"
-              alt="Jane Doe"
-              className="w-16 h-16 rounded-full mr-4"
-            />
-            <div>
-              <h3 className="font-medium">Jane Doe</h3>
-              <p className="text-sm text-gray-600">The One Above All</p>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <img
-              src="/assets/team/john_smith.jpg"
-              alt="John Smith"
-              className="w-16 h-16 rounded-full mr-4"
-            />
-            <div>
-              <h3 className="font-medium">John Smith</h3>
-              <p className="text-sm text-gray-600">"Full-Stack Developer"</p>
-            </div>
-          </div>
-        </div>
-        <h2 className="text-2xl font-semibold mt-8 mb-4">Get in Touch</h2>
-        <p className="text-gray-700 leading-relaxed mb-6">
-          I don't have an email
-          <a href="mailto:info@mathelearn.com" className="p-1 text-pencil hover:underline">
-            info@mathelearn.com
-          </a>.
+
+        <h2 className="text-2xl font-semibold mt-8 mb-3">Reading</h2>
+        <p className="leading-relaxed mb-4">
+          Reading needs no account. Open a course and start.
         </p>
-        <div className="text-center">
+
+        <h2 className="text-2xl font-semibold mt-8 mb-3">Writing</h2>
+        <p className="leading-relaxed mb-4">
+          To write a course, make an account and open the editor. Pick a
+          lesson to edit, or make a new course, chapter, or lesson.
+          Saving puts it live straight away, and anyone with the link can
+          read it.
+        </p>
+
+        <h2 className="text-2xl font-semibold mt-8 mb-3">Your progress</h2>
+        <p className="leading-relaxed mb-6">
+          If you are logged in, the lessons you finish are saved to your
+          profile, so you can see where you left off.
+        </p>
+
+        <div className="mt-8">
           <Link to="/" className="text-pencil hover:underline">
-            &larr; Back to Home
+            &larr; Back to home
           </Link>
         </div>
       </div>
