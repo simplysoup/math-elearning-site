@@ -60,8 +60,10 @@ table, renamed. There is no separate chapter level on top of units.
 ## Lessons and completion
 
 A lesson is a short page: an explanation, a graph you can move, a
-question to answer, or a code block. Video is still a placeholder block
-and is out of scope for this spec.
+question to answer, a code block, or an embedded video. Video blocks
+take a YouTube or Vimeo link and play in the lesson; other URLs are
+rejected. The embed URL is built from the parsed video ID, never from
+the raw link, so an arbitrary URL can never become an iframe source.
 
 Finishing a lesson records a completion for that student in that course.
 Completion is per lesson, per student. A student's own progress is shown
