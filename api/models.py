@@ -282,6 +282,9 @@ class Question(Base):
     question_text = Column(Text, nullable=False)
     explanation = Column(Text)
     visualization = Column(Boolean, default=False)
+    # Optional challenge problem: harder, skippable, shown after the
+    # required problems. False for the required problems.
+    challenge = Column(Boolean, default=False)
 
     content = relationship("LessonContent", back_populates="question")
     options = relationship("QuestionOption", back_populates="question", cascade="all, delete-orphan")

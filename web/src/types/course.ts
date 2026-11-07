@@ -49,6 +49,7 @@ export interface QuestionContent extends ContentBase {
       correct_answer: number | string;
       explanation?: string;
       visualization?: boolean; // Add this line
+      challenge?: boolean; // Optional challenge problem: harder, skippable
   };
   isCurrent: boolean;
 }

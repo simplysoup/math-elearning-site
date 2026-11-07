@@ -193,6 +193,7 @@ def _serialize_lesson_content(db: Session, lesson_id: int) -> list:
                         "correct_answer": next((i for i, opt in enumerate(options) if opt.is_correct), None),
                         "explanation": question.explanation,
                         "visualization": question.visualization,
+                        "challenge": bool(getattr(question, "challenge", False)),
                     },
                 })
             elif question.question_format == 'short_answer':
@@ -1224,6 +1225,7 @@ def replace_content(
                 question_format="multiple_choice",
                 question_text=block.data.question,
                 explanation=block.data.explanation,
+                challenge=getattr(block.data, "challenge", False),
             ))
             for i, option_text in enumerate(options, start=1):
                 db.add(QuestionOption(

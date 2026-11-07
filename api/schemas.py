@@ -84,6 +84,7 @@ class EditorMultipleChoiceData(BaseModel):
     options: List[str]
     correctAnswer: int
     explanation: str | None = None
+    challenge: bool = False
 
 
 class EditorMultipleChoiceBlock(BaseModel):
@@ -167,6 +168,7 @@ class MultipleChoiceQuestionData(BaseModel):
     correct_answer: int
     explanation: str | None = None
     visualization: bool
+    challenge: bool = False
 
 class ShortAnswerQuestionData(BaseModel):
     format: Literal["short_answer"]

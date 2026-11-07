@@ -71,6 +71,12 @@ export const QuestionComponent = ({
 
     return (
         <div className="space-y-4 p-4 border border-rule rounded-sm">
+            {/* Challenge label */}
+            {content.data.challenge && (
+                <p className="font-mono text-xs tracking-widest uppercase text-pencil">
+                    Challenge — optional
+                </p>
+            )}
             {/* Question bubble */}
             <div className="p-2">
                 <MarkdownRender>{content.data.question}</MarkdownRender>
@@ -91,13 +97,23 @@ export const QuestionComponent = ({
 
             {/* Check Answer button */}
             {!isChecking && isCurrent && (
-                <button
-                    onClick={onCheckAnswer}
-                    className="px-4 py-2 bg-ink hover:bg-pencil text-white font-medium rounded-sm transition-colors disabled:opacity-50"
-                    disabled={userAnswer === null || userAnswer === undefined}
-                >
-                    Check Answer
-                </button>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={onCheckAnswer}
+                        className="px-4 py-2 bg-ink hover:bg-pencil text-white font-medium rounded-sm transition-colors disabled:opacity-50"
+                        disabled={userAnswer === null || userAnswer === undefined}
+                    >
+                        Check Answer
+                    </button>
+                    {content.data.challenge && onContinue && (
+                        <button
+                            onClick={onContinue}
+                            className="text-sm text-stone-500 hover:text-ink hover:underline"
+                        >
+                            Skip this one
+                        </button>
+                    )}
+                </div>
             )}
 
             {/* Correct answer feedback */}
