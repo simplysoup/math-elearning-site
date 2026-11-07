@@ -101,6 +101,25 @@ The markers are everywhere:
   (and sometimes painful) process filled with opportunities to
   make mistakes."
 
+**Grounded, not salesy.** The model is 3Blue1Brown: calm,
+plain, academic, the math doing the talking. The voice never
+sells the idea, and it never performs enthusiasm.
+
+- The prompt above a visualization is a plain question the
+  viz answers ("As x approaches 1, what does f(x)
+  approach?"), not a command ("Guess, then drag").
+- The short text describes what the viz shows, in the third
+  person ("The values approach 2 from both sides"), not
+  "You just watched...".
+- No hype words, no exclamation, no "the whole point",
+  no "amazing". A caution is a calm note, and its phrasing
+  varies: "A common mistake is to...", "It is tempting
+  to...", "Note that...", "The two are easy to confuse."
+  Never a repeated template like "The trap is..." in every
+  lesson — a repeated template reads as generated.
+- Let the equation speak. If the display line says it,
+  do not restate it in a punchier sentence underneath.
+
 ## 4. Every step of a worked example gets a sentence
 
 Paul never writes a chain of algebra without saying what he is

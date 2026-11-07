@@ -218,3 +218,30 @@ Redesign, live the same day (commit 2a1870d, verified 19/19):
 - check_calc1.js updated to the new order (19 checks, was 17).
   The L1 and L11 checks wait for autoplay to finish, then
   reset the slider before reading values.
+
+## Voice rewrite (2026-11-06)
+
+Nicholas's verdict on the viz-first version: it still felt
+AI-generated and a bit like an over-enthusiastic sales pitch.
+He wants grounded and academic but still educational — 3Blue1Brown.
+The problems were the prompts ("Guess, then drag the slider")
+and the short texts ("You just watched... The trap is..."),
+a template repeated in every lesson.
+
+Rewritten the same day (content only, no code change; verified
+19/19):
+
+- Prompts are now plain questions the viz answers ("As x
+  approaches 1, what does f(x) approach?"), no commands, no
+  "Guess".
+- Short texts are third person and declarative ("The values
+  approach 2 from both sides"), no "You just watched". A
+  caution is a calm note whose phrasing varies ("A common
+  mistake is to...", "It is tempting to...", "Note that...",
+  "The two are easy to confuse"), never a repeated "The trap
+  is..." template.
+- Course description shortened to "Limits, derivatives, and
+  integrals, with interactive graphs." (updated in the DB;
+  there is no course-metadata update endpoint).
+- Style guide section 3 gained a "Grounded, not salesy"
+  subsection so future lessons do not regress to the template.
