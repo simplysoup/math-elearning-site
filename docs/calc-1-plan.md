@@ -245,3 +245,33 @@ Rewritten the same day (content only, no code change; verified
   there is no course-metadata update endpoint).
 - Style guide section 3 gained a "Grounded, not salesy"
   subsection so future lessons do not regress to the template.
+
+## Problems: 3 required + 5 challenge (2026-11-07)
+
+Nicholas's verdict on the single question per lesson: it
+didn't test understanding, it just asked whether the student
+read the example. Replaced with 3 required problems plus 5
+optional challenge problems per lesson — 96 problems in all,
+each with 4 options and an explanation that re-teaches the
+step. The required problems apply the lesson's idea to a new
+situation (a different function, a different number, a case
+where the idea fails); the challenge problems are harder
+(edge cases, a second idea combined with the first, a setting
+the lesson did not walk through). All answers verified by hand.
+
+Implementation (commit 1e9bbf1, verified 28/28):
+
+- New `challenge` flag on questions: a Boolean column on the
+  `questions` table (migration d4e5f6a7b8c9), carried through
+  the editor input and read schemas, the content serializer,
+  and the frontend types.
+- Challenge problems are labelled "Challenge — optional" and
+  have a "Skip this one" button that advances without
+  answering. Required problems have no skip.
+- Lesson flow is now 11 steps: viz, short text, 3 required,
+  5 challenge, optional video.
+- check_calc1.js updated to the new flow (28 checks, was 19):
+  it answers the 3 required problems from the API data and
+  skips the 5 challenge problems, and it clicks options by
+  grid index because KaTeX rendering changes the buttons'
+  accessible names.

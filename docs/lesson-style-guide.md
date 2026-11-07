@@ -225,6 +225,18 @@ optional video. The adaptation:
   the step ("Factor: ... so the limit is ..."), not just
   restating the answer.
 
+**Problems, not recall.** Each lesson has 3 required problems
+and 5 optional challenge problems, and none of them asks for
+the answer to the lesson's own example. A problem tests the
+idea by applying it to a new situation: a different function,
+a different number, a case where the idea fails. The required
+problems are the core idea, three times, in three different
+guises. The challenge problems are harder: edge cases, a
+second idea combined with the first, a setting the lesson did
+not walk through. A challenge problem is labelled as such and
+can be skipped. Every problem's explanation re-teaches the
+step, it does not just restate the answer.
+
 **Lesson template (viz first):**
 
 1. The prompt, one line, above the visualization. A guess,
