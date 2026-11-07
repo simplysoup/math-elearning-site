@@ -181,39 +181,46 @@ say, after the lesson, what the trap was.
 ## 7. Adapting Paul to this site
 
 Paul's sections are long, with many worked examples. Our
-lessons are short: one markdown block, one interactive
-visualization, one video, one check question. The adaptation:
+lessons are short, and they lead with the interactive, not the
+text: one visualization first (with a one-line prediction
+prompt), one short markdown block, one check question, one
+optional video. The adaptation:
 
-- The markdown block is the motivation, the idea in plain
-  words, and the setup for the visualization. It is not a
-  full lecture. Roughly 120–200 words.
+- The visualization is the lesson. It opens with a one-line
+  prompt ("Guess, then drag") and plays once on load, so the
+  reader sees the phenomenon before reading a word. The
+  markdown comes after, and only says what happened: 60–100
+  words, the idea in plain words, the trap named.
 - The visualization does the work Paul's tables and graphs
   do: it is the place the reader sees the idea happen. The
-  markdown must tell the reader what to do with it ("Move the
+  prompt must tell the reader what to do with it ("Move the
   slider and watch ...") and what to look for ("the values
   stay close to 2 no matter how near to 1 you get").
-- The video is the worked example. The markdown should not
-  try to be the worked example as well; it should set up the
-  one question the video answers.
+- The video is the worked example, and it is optional: it
+  comes last, labelled as such, so the core loop (play, read,
+  answer) takes two minutes. The markdown should not try to
+  be the worked example as well; it should say what the
+  reader just saw.
 - The check question tests the idea the lesson taught, not a
   trick. Its explanation re-teaches in one sentence, naming
   the step ("Factor: ... so the limit is ..."), not just
   restating the answer.
 
-**Lesson template:**
+**Lesson template (viz first):**
 
-1. The question. One concrete situation, one sentence.
-   ("Here is a function that breaks if you try to use it at
-   one point.")
-2. The idea, in plain words, with a concrete number or
-   function. No new term yet.
-3. The setup for the visualization: what to move, what to
-   watch for.
-4. The definition or formula, only now, on its own line.
-5. The trap: one sentence naming what goes wrong if you
-   forget the idea.
-6. (In the question's explanation:) the step that gets the
-   answer, in one sentence.
+1. The prompt, one line, above the visualization. A guess,
+   not a statement. ("As x gets close to 1, does f(x) settle
+   on a value? Guess, then drag.")
+2. The visualization, playing once on load. The reader sees
+   the phenomenon before reading a word.
+3. The short text: what happened, the idea in plain words,
+   the trap. 60–100 words. The definition or formula goes
+   here, on its own line, only now.
+4. The check question: the idea the lesson taught, not a
+   trick. Its explanation re-teaches in one sentence, naming
+   the step.
+5. The video, last and optional: the worked example, for
+   readers who want it.
 
 ## 8. The visualization: an experiment, not a picture
 

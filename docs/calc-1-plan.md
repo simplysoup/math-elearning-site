@@ -179,3 +179,42 @@ All Khan Academy unless noted.
   is a fresh application; lesson 10's example from x²+5 to
   x²+7 for the same reason. Re-verified 17/17; screenshots
   eyeballed for lessons 2, 7, 9.
+
+## Viz-first redesign (2026-11-06)
+
+Nicholas's verdict on the site as it stood: he wouldn't use it
+— too text heavy for a short attention span, and the course
+bored him even though he knows and likes calculus. The lesson
+flow (read ~160 words, then the viz, then a several-minute
+video, then the question) put the interesting part behind the
+reading. The auto-scroll was also clunky on mobile: it scrolled
+to an empty anchor at the bottom of the page, leaving the top
+of the new step above the viewport, under a sticky navbar, on a
+long smooth animation.
+
+Redesign, live the same day (commit 2a1870d, verified 19/19):
+
+- Lesson order is now viz, short text, question, optional
+  video. The builder file keeps authoring order (markdown,
+  viz, video, question); update_calc1_content.py reorders to
+  reading order at push time.
+- Every viz has a one-line prediction prompt above the iframe
+  (config.prompt, rendered by VisualizationComponent) and plays
+  once on load: viz.autoplay(slider, to, ms) animates the slider
+  to a per-lesson target, snaps to the slider's step, and stops
+  the moment the reader touches the slider. L1 sweeps x 0.9→1.1;
+  L4 shrinks h to 0.05; L7 runs the ladder out to 4.5; L11 runs
+  n 4→20; L8's default moved to 1 so the sweep 1→8 passes the
+  peak at 4.
+- Markdowns rewritten to "what happened" after the viz: 65–95
+  words each (was ~160), idea in plain words, trap named.
+  The video step is labelled optional and comes last, so the
+  core loop (play, read, answer) takes about two minutes.
+- Auto-scroll fixed (LessonPage): the new step's top is
+  scrolled into view just below the sticky navbar, only when
+  it is off screen; the bottom anchor is gone.
+- Style guide updated (section 7 and the lesson template) to
+  the viz-first order and the 60–100 word text.
+- check_calc1.js updated to the new order (19 checks, was 17).
+  The L1 and L11 checks wait for autoplay to finish, then
+  reset the slider before reading values.
