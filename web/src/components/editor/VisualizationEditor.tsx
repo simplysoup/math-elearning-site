@@ -27,6 +27,12 @@ viz.values(rows, headers) — the current values as a small table,
   given, labels the value columns. It returns { update(rows) },
   which rebuilds the table — call it from the draw function so
   the values stay live.
+viz.autoplay(slider, to, ms) — animate a slider from its current
+  value to the target over the given milliseconds, once, right
+  after the viz loads, so the reader sees the phenomenon before
+  touching anything. The value snaps to the slider's step. It
+  stops the moment the reader touches the slider. Call it at
+  the end of the code, after draw().
 viz.redraw(f) — run f again whenever a slider moves. A plot clears
   its svg on every redraw, so re-add your own elements here, after
   the plot call, and they will be drawn on top each time.

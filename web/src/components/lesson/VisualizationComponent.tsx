@@ -26,6 +26,7 @@ type LinearCombineConfig = {
 type CustomCodeConfig = {
     kind: "custom-code";
     code?: string;
+    prompt?: string;
 };
 
 const W = 560;
@@ -57,7 +58,14 @@ export const VisualizationComponent = ({
     // CustomVizFrame). The frame cannot reach the parent page, the
     // user's session, or the site's API.
     if (content.data.engine === "custom" && config && config.kind === "custom-code") {
-        return <CustomVizFrame code={config.code || ""} />;
+        return (
+            <div className="space-y-3">
+                {config.prompt && (
+                    <p className="text-base leading-relaxed">{config.prompt}</p>
+                )}
+                <CustomVizFrame code={config.code || ""} />
+            </div>
+        );
     }
 
     if (content.data.engine !== "custom" || !config || config.kind !== "linear-combine") {

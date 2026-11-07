@@ -156,17 +156,61 @@
       input.step = step == null ? 1 : step;
       input.value = value;
       var state = { value: Number(value) };
-      input.addEventListener('input', function () {
-        state.value = Number(input.value);
-        name.textContent = label + ' = ' + input.value;
+      // One place that sets the slider: value, label, redraws.
+      // Used by the input handler and by viz.autoplay.
+      function setSlider(v) {
+        state.value = Number(v);
+        input.value = v;
+        name.textContent = label + ' = ' + v;
         redraws.forEach(function (fn) { fn(); });
         reportHeight();
+      }
+      input.addEventListener('input', function () {
+        // The reader took over: stop any autoplay dead.
+        if (state._anim) { cancelAnimationFrame(state._anim); state._anim = null; }
+        state._touched = true;
+        setSlider(input.value);
       });
+      state._set = setSlider;
+      state._step = step == null ? 1 : step;
       wrap.appendChild(name);
       wrap.appendChild(input);
       root.appendChild(wrap);
       reportHeight();
       return state;
+    },
+
+    // Animate a slider from its current value to `to` over `ms`
+    // milliseconds, once, right after the viz loads — so the reader
+    // sees the phenomenon before touching anything. The value snaps
+    // to the slider's step, so an integer slider stays integer.
+    // Stops the moment the reader touches the slider (see the input
+    // handler above). Call it at the end of the teacher code, after
+    // draw(). Starts after a short delay so the page has settled.
+    autoplay: function (slider, to, ms) {
+      var from = slider.value;
+      var step = slider._step || 1;
+      function snap(v) {
+        return Math.round(v / step) * step;
+      }
+      setTimeout(function () {
+        // The reader may have grabbed the slider during the delay;
+        // if so, don't start.
+        if (slider._touched) return;
+        var start = null;
+        function frame(t) {
+          if (slider._anim === null) return;
+          if (start === null) start = t;
+          var k = Math.min((t - start) / (ms || 1500), 1);
+          slider._set(snap(from + (to - from) * k));
+          if (k < 1) {
+            slider._anim = requestAnimationFrame(frame);
+          } else {
+            slider._anim = null;
+          }
+        }
+        slider._anim = requestAnimationFrame(frame);
+      }, 500);
     },
 
     plot: function (fn, opts) {

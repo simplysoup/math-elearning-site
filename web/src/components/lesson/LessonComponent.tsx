@@ -69,6 +69,11 @@ export const LessonComponent = ({
                 </>
             ) : content.type === 'video' ? (
                 <>
+                    {isCurrent && (
+                        <p className="text-sm text-stone-500 mb-2">
+                            Optional — the worked example. Watch it if you want to see the problem solved step by step, or continue to finish the lesson.
+                        </p>
+                    )}
                     <VideoComponent content={content} />
                     {isCurrent && <button
                         onClick={onContinue}

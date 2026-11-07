@@ -22,7 +22,7 @@ const LessonPage = () => {
   const { courseId, unitId, lessonId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
-  const contentEndRef = useRef<HTMLDivElement>(null);
+  const currentStepRef = useRef<HTMLDivElement>(null);
 
   const [course, setCourse] = useState<Course | null>(null);
   const [unit, setUnit] = useState<Unit | null>(null);
@@ -115,9 +115,21 @@ const LessonPage = () => {
     setIsLastLesson(false);
   }, [lessonId]);
 
+  // Scroll the new step into view when it changes — its top, just
+  // below the sticky navbar — and only when it is actually off
+  // screen. The old version scrolled an empty anchor at the bottom
+  // of the page, which on a phone jumped to the bottom and left the
+  // top of the step above the viewport, so the reader had to scroll
+  // back up. The scroll-mt on the wrapper keeps the navbar from
+  // covering the step's top.
   useEffect(() => {
-    contentEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [completedContents, currentIndex]);
+    const el = currentStepRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    if (rect.top < 72 || rect.top > window.innerHeight) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [currentIndex, completed]);
 
   const handleCheckAnswer = () => {
     setIsChecking(true);
@@ -310,26 +322,28 @@ const LessonPage = () => {
         ))}
 
         {!completed && currentIndex < lesson.contents.length && (
-          <LessonComponent
-            content={lesson.contents[currentIndex]}
-            index={currentIndex}
-            isCurrent={true}
-            userAnswer={userAnswers[currentIndex]}
-            showError={showError}
-            showExplanation={showExplanation}
-            isChecking={isChecking}
-            onAnswerChange={handleAnswerChange}
-            onCheckAnswer={handleCheckAnswer}
-            onContinue={handleContinue}
-            onTryAgain={handleTryAgain}
-            onShowExplanation={handleShowExplanation}
-            onCompleteLesson={handleCompleteLesson}
-            isFinalQuestion={isFinalQuestion}
-          />
+          <div ref={currentStepRef} className="scroll-mt-20">
+            <LessonComponent
+              content={lesson.contents[currentIndex]}
+              index={currentIndex}
+              isCurrent={true}
+              userAnswer={userAnswers[currentIndex]}
+              showError={showError}
+              showExplanation={showExplanation}
+              isChecking={isChecking}
+              onAnswerChange={handleAnswerChange}
+              onCheckAnswer={handleCheckAnswer}
+              onContinue={handleContinue}
+              onTryAgain={handleTryAgain}
+              onShowExplanation={handleShowExplanation}
+              onCompleteLesson={handleCompleteLesson}
+              isFinalQuestion={isFinalQuestion}
+            />
+          </div>
         )}
 
         {completed && (
-          <div className="border border-rule rounded-sm p-6 text-center">
+          <div ref={currentStepRef} className="scroll-mt-20 border border-rule rounded-sm p-6 text-center">
             <p className="text-lg font-medium">Lesson complete.</p>
             <p className="mt-1 text-sm text-stone-600">
               {nextLesson
@@ -357,7 +371,6 @@ const LessonPage = () => {
           </div>
         )}
 
-        <div ref={contentEndRef} />
       </div>
 
       <CommentsThread kind="lesson" targetId={lesson.id} isCourseOwner={isOwner} />
